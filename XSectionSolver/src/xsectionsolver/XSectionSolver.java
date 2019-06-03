@@ -13,14 +13,14 @@ public class XSectionSolver {
         
         System.setProperty("sun.awt.noerasebackground", "true");
         
-        //Expression eh = new Expression("ln(sin(pi/2))");
-        //mXparser.consolePrintln(eh.getExpressionString() + " = " + eh.calculate());
+        Expression eh = new Expression("ln(sin(pi/2))");
+        mXparser.consolePrintln(eh.getExpressionString() + " = " + eh.calculate());
         
         
-        //Function f1 = new Function("f(x) = x^4");
-        //Function f2 = new Function("f(x) = x");
-        //Expression e = new Expression("int("+f1.getFunctionExpressionString()+",x,-1,1)");
-        //mXparser.consolePrintln(f1.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
+        Function f1 = new Function("f(x) = x^4");
+        Function f2 = new Function("f(x) = x");
+        Expression e = new Expression("int("+f1.getFunctionExpressionString()+",x,-1,1)");
+        mXparser.consolePrintln(f1.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
         
     }
     
