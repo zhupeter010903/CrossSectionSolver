@@ -1,11 +1,11 @@
 
 package xsectionsolver;
 
-/*import org.mariuszgromada.math.mxparser.*;
+import org.mariuszgromada.math.mxparser.*;
 import org.mariuszgromada.math.mxparser.mathcollection.*;
 import org.mariuszgromada.math.mxparser.parsertokens.*;
 import org.mariuszgromada.math.mxparser.regressiontesting.*;
-import org.mariuszgromada.math.mxparser.syntaxchecker.*;*/
+import org.mariuszgromada.math.mxparser.syntaxchecker.*;
 
 public class XSectionSolver {
 
