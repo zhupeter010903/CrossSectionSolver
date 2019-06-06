@@ -19,6 +19,24 @@ public class Calculator {
     private int upperLimit;
     private int lowerLimit;
     private int actualLength;
+    private boolean fPieceWise;
+    private boolean gPieceWise;
+    
+    
+    public Calculator(String f, String g, int xSectionType, int layersNum, int upperLimit, int lowerLimit, 
+            int actualLength, int riemannSumType, boolean fPieceWise, boolean gPieceWise) {
+        this.f = f;
+        this.g = g;
+        this.xSectionType = xSectionType;
+        this.layersNum = layersNum;
+        this.upperLimit = upperLimit;
+        this.lowerLimit = lowerLimit;
+        this.actualLength = actualLength;
+        this.riemannSumType = riemannSumType;
+        this.fPieceWise = fPieceWise;
+        this.gPieceWise = gPieceWise;
+    }
+
 
     @Override
     public int hashCode() {
@@ -82,17 +100,6 @@ public class Calculator {
         return "Calculator{" + "MIN_ACTUAL_LENGTH=" + MIN_ACTUAL_LENGTH + ", f=" + f + ", g=" + g + ", xSectionType=" + xSectionType + ", layersNum=" + layersNum + ", upperLimit=" + upperLimit + ", lowerLimit=" + lowerLimit + ", actualLength=" + actualLength + ", riemannSumType=" + riemannSumType + '}';
     }
     private int riemannSumType;
-
-    public Calculator(String f, String g, int xSectionType, int layersNum, int upperLimit, int lowerLimit, int actualLength, int riemannSumType) {
-        this.f = f;
-        this.g = g;
-        this.xSectionType = xSectionType;
-        this.layersNum = layersNum;
-        this.upperLimit = upperLimit;
-        this.lowerLimit = lowerLimit;
-        this.actualLength = actualLength;
-        this.riemannSumType = riemannSumType;
-    }
 
     public int getRiemannSumType() {
         return riemannSumType;
