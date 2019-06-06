@@ -15,11 +15,6 @@ public class PieceWiseFunction extends Function{
     private String functionName;
     private int pieceWiseNumber;
     private Argument[][] pieceWiseLimits;
-
-    public PieceWiseFunction(String functionDefinitionString, PrimitiveElement... elements) {
-        super(functionDefinitionString, elements);
-        //this.
-    }
     
     public PieceWiseFunction(String functionName, String functionDefinitionString, String ArgumentName){
         
@@ -63,6 +58,10 @@ public class PieceWiseFunction extends Function{
             }
         }
         return Double.NaN;
+    }
+
+    public Argument[][] getPieceWiseLimits() {
+        return pieceWiseLimits;
     }
     
 }

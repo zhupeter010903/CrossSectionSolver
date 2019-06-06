@@ -119,7 +119,7 @@ public final class mXparser {
 	 * @see mXparser.#consolePrint(Object)
 	 */
 	private static String CONSOLE_OUTPUT = "";
-	private static String CONSOLE_PREFIX = "[mXparser-v." + VERSION + "] ";
+	private static String CONSOLE_PREFIX = "";
 	private static String CONSOLE_OUTPUT_PREFIX = CONSOLE_PREFIX;
 	private static int CONSOLE_ROW_NUMBER = 1;
 	/**
