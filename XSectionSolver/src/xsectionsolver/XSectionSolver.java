@@ -29,16 +29,21 @@ public class XSectionSolver {
         System.out.println(cal.calculateTheoraticalVolume());*/
         
         
-        Calculator cal2 = new Calculator("arcsec(x),-4,-1,arcsin(x),-1,1","arccsc(x),-4,-1,arccos(x),-1,1",0,20,-1,1,20,0);
+        Calculator cal2 = new Calculator("arcsec(x),-4,-1,arcsin(x),-1,1,arcsec(x),1,4","arccsc(x),-4,-1,arccos(x),-1,1,arccsc(x),1,4",0,20,-4,4,20,0);
         
         System.out.println(cal2.getFunction1().getFunctionExpressionString());
         System.out.println(cal2.getFunction2().getFunctionExpressionString());
         
-        Function f3 = new Function("f","arcsin(x)","x");
-        Expression e = new Expression("int((arcsin(x)-arccos(x))^2,x,-1,1)");
-        //mXparser.consolePrintln(f3.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
-        System.out.println(cal2.calculateTheoraticalVolume());
+        /*for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
+            System.out.println(i+": "+cal2.getPieceWiseLimits().get(i).getArgumentValue());
+        }*/
         
+        Function f3 = new Function("f","arcsin(x)","x");
+        Expression e = new Expression("int((arcsec(x)-arccsc(x))^2,x,1,4)");
+        //mXparser.consolePrintln(f3.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
+        //System.out.println(cal2.calculateTheoraticalVolume());
+        Window3d threeD= new Window3d(800,600,"3d model");
+        threeD.run();
     }
     
 }

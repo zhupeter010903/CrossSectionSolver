@@ -1,8 +1,10 @@
 
 package xsectionsolver;
 
+import static java.lang.Math.PI;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import org.mariuszgromada.math.mxparser.*;
 import org.mariuszgromada.math.mxparser.mathcollection.*;
@@ -15,11 +17,12 @@ public class Calculator {
     final static public int MIN_ACTUAL_LENGTH = 20;
     final static public int MIN_LAYERS_NUM = 20;
     
-    final static public int XSECTION_SQUARE=0;
-    final static public int XSECTION_CIRCLE=1;
-    final static public int XSECTION_SEMICIRCLE=2;
-    final static public int XSECTION_EQUILIBRIUM_TRIANGLE=3;
-    final static public int XSECTION_RIGHT_ISOSCELES_TRIANGLE=4;
+    final static public int XSECTION_SQUARE = 0;
+    final static public int XSECTION_CIRCLE = 1;
+    final static public int XSECTION_SEMICIRCLE = 2;
+    final static public int XSECTION_EQUILIBRIUM_TRIANGLE = 3;
+    final static public int XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE = 4;
+    final static public HashMap<Integer,Double> AreaConstants = new HashMap();
     
     final static public int RIGHT_RIEMANNSUM=0;
     final static public int LEFT_RIEMANNSUM=1;
@@ -57,6 +60,11 @@ public class Calculator {
         
         actualToAlgebraRatio = actualLength/(Math.abs(upperLimit - lowerLimit));
         
+        AreaConstants.put(XSECTION_SQUARE, 1.0d);
+        AreaConstants.put(XSECTION_CIRCLE, PI);
+        AreaConstants.put(XSECTION_SEMICIRCLE, PI/2);
+        AreaConstants.put(XSECTION_EQUILIBRIUM_TRIANGLE, Math.sqrt(3)/4);
+        AreaConstants.put(XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE, 0.25d);
         setFunctions();
         mergePieceWiseLimits();
     }
@@ -83,6 +91,7 @@ public class Calculator {
     }
     
     public void mergePieceWiseLimits(){
+        pieceWiseLimits.add(new Argument("x",lowerLimit));
         Argument[][] fLimits = Function1.getPieceWiseLimits();
         Argument[][] gLimits = Function2.getPieceWiseLimits();
         /*for(Argument[] a:fLimits){
@@ -100,26 +109,18 @@ public class Calculator {
         
         while(i<f && j<g){
             if(fLimits[i/2][i%2].getArgumentValue() < gLimits[j/2][j%2].getArgumentValue()){
-                if(!pieceWiseLimits.isEmpty()){
-                    if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                            !=fLimits[i/2][i%2].getArgumentValue()){
-                        
-                    pieceWiseLimits.add(fLimits[i/2][i%2]);
-                    }
-                }
-                else{
+                
+                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<fLimits[i/2][i%2].getArgumentValue()
+                        && fLimits[i/2][i%2].getArgumentValue() < upperLimit){
+
                     pieceWiseLimits.add(fLimits[i/2][i%2]);
                 }
                 i++;
             }
             else{
-                if(!pieceWiseLimits.isEmpty()){
-                    if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                            !=gLimits[j/2][j%2].getArgumentValue()){
-                    pieceWiseLimits.add(gLimits[j/2][j%2]);
-                    }
-                }
-                else{
+                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<gLimits[j/2][j%2].getArgumentValue()
+                        && gLimits[j/2][j%2].getArgumentValue() < upperLimit){
+
                     pieceWiseLimits.add(gLimits[j/2][j%2]);
                 }
                 j++;
@@ -128,42 +129,37 @@ public class Calculator {
         }
         
         while(i<f){
-            if(!pieceWiseLimits.isEmpty()){
-                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                        !=fLimits[i/2][i%2].getArgumentValue()){
+            if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<fLimits[i/2][i%2].getArgumentValue()
+                    && fLimits[i/2][i%2].getArgumentValue() < upperLimit){
 
-                pieceWiseLimits.add(fLimits[i/2][i%2]);
-                }
-            }
-            else{
                 pieceWiseLimits.add(fLimits[i/2][i%2]);
             }
             i++;
         }
         
         while(j<g){
-            if(!pieceWiseLimits.isEmpty()){
-                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                        !=gLimits[j/2][j%2].getArgumentValue()){
-                pieceWiseLimits.add(gLimits[j/2][j%2]);
-                }
-            }
-            else{
+            if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<gLimits[j/2][j%2].getArgumentValue()
+                    && gLimits[j/2][j%2].getArgumentValue() < upperLimit){
+
                 pieceWiseLimits.add(gLimits[j/2][j%2]);
             }
             j++;
         }
+        
+        pieceWiseLimits.add(new Argument("x",upperLimit));
     }
     
     public double calculateTheoraticalVolume(){
-        if(pieceWiseLimits.isEmpty()){
+        double AreaConstant = AreaConstants.get(xSectionType);
+        if(!fPieceWise && !gPieceWise){
         
             Expression volume = new Expression("int((("+Function1.getFunctionExpressionString()
                     +")-("+Function2.getFunctionExpressionString()+"))^2,x,"+lowerLimit+","+upperLimit+")");
-            return volume.calculate();
+            return AreaConstant * volume.calculate();
             
         }
         else{
+            
             double volumeSum = 0;
             
             for(int i=0;i<pieceWiseLimits.size()-1;i++){
@@ -175,7 +171,7 @@ public class Calculator {
                 volumeSum += volume.calculate();
             }
             
-            return volumeSum;
+            return AreaConstant * volumeSum;
             
         }
         
