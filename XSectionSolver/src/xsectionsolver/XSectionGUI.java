@@ -8,6 +8,8 @@ import org.mariuszgromada.math.mxparser.regressiontesting.*;
 import org.mariuszgromada.math.mxparser.syntaxchecker.*;
 
 public class XSectionGUI extends javax.swing.JFrame {
+    
+    private String welcomeGuide;
 
     public XSectionGUI() {
         initComponents();
@@ -125,7 +127,7 @@ public class XSectionGUI extends javax.swing.JFrame {
         txtG.setPreferredSize(new java.awt.Dimension(150, 25));
 
         txtLayersNum.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtLayersNum.setText("20");
+        txtLayersNum.setText("" + Calculator.MIN_LAYERS_NUM);
         txtLayersNum.setMaximumSize(new java.awt.Dimension(150, 25));
         txtLayersNum.setMinimumSize(new java.awt.Dimension(150, 25));
         txtLayersNum.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -141,13 +143,14 @@ public class XSectionGUI extends javax.swing.JFrame {
         txtLowerLim.setPreferredSize(new java.awt.Dimension(150, 25));
 
         txtActualLength.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtActualLength.setText("20");
+        txtActualLength.setText("" + Calculator.MIN_ACTUAL_LENGTH);
         txtActualLength.setMaximumSize(new java.awt.Dimension(150, 25));
         txtActualLength.setMinimumSize(new java.awt.Dimension(150, 25));
         txtActualLength.setPreferredSize(new java.awt.Dimension(150, 25));
 
         cbBoxXSectionType.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cbBoxXSectionType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Square", "Circle", "Semi-Circle", "Equilibrium Triangle", "Right-Isosceles Triangle (Hypotenuse)" }));
+        cbBoxXSectionType.setSelectedIndex(2);
         cbBoxXSectionType.setMaximumSize(new java.awt.Dimension(150, 25));
         cbBoxXSectionType.setMinimumSize(new java.awt.Dimension(150, 25));
         cbBoxXSectionType.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -337,8 +340,8 @@ public class XSectionGUI extends javax.swing.JFrame {
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
 
-
-
+        initiate();
+        
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btn3DActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3DActionPerformed
@@ -354,22 +357,30 @@ public class XSectionGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btn2DActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2DActionPerformed
-        // TODO add your handling code here:
+
+        new Window2d().run();
+
     }//GEN-LAST:event_btn2DActionPerformed
 
     private void initiate() {
 
+        welcomeGuide = "Welcome to Volume by Cross Section Solver!"
+                     + "\nTo use this solver, simply enter and select information."
+                     + "\nPlease check your brackets when entering functions."
+                     + "\nEnjoy your exploration in Calculus!";
+        txtOutput.setText(welcomeGuide);
+        txtF.setText("");
+        txtG.setText("");
         txtLayersNum.setText("" + Calculator.MIN_LAYERS_NUM);
+        txtLowerLim.setText("");
+        txtUpperLim.setText("");
         txtActualLength.setText("" + Calculator.MIN_ACTUAL_LENGTH);
-
+        cbBoxXSectionType.setSelectedIndex(2);
+        cbBoxRSumType.setSelectedIndex(0);
+        
     }
     
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+    public void run(){
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -395,6 +406,8 @@ public class XSectionGUI extends javax.swing.JFrame {
             }
         });
     }
+
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn2D;
