@@ -41,8 +41,9 @@ public class XSectionSolver {
         Function f3 = new Function("f","arcsin(x)","x");
         Expression e = new Expression("int((arcsec(x)-arccsc(x))^2,x,1,4)");
         //mXparser.consolePrintln(f3.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
-        System.out.println(cal2.calculateTheoraticalVolume());
-        
+        //System.out.println(cal2.calculateTheoraticalVolume());
+        Window3d threeD= new Window3d(800,600,"3d model");
+        threeD.run();
     }
     
 }
