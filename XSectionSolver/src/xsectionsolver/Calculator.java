@@ -2,6 +2,7 @@
 package xsectionsolver;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.mariuszgromada.math.mxparser.*;
 import org.mariuszgromada.math.mxparser.mathcollection.*;
@@ -20,8 +21,8 @@ public class Calculator {
     final static private int XSECTION_RIGHT_ISOSCELES_TRIANGLE=4;
     
     final static private int RIGHT_RIEMANNSUM=0;
-    final static private int LEFT_RIEMANNSUM=0;
-    final static private int MIDDLE_RIEMANNSUM=0;
+    final static private int LEFT_RIEMANNSUM=1;
+    final static private int MIDDLE_RIEMANNSUM=2;
     
     private String Function1Expression;
     private String Function2Expression;
@@ -35,12 +36,14 @@ public class Calculator {
     private int riemannSumType;
     private boolean fPieceWise;
     private boolean gPieceWise;
+    private double actualToAlgebraRatio;
+    
+    private ArrayList<Argument> pieceWiseLimits = new ArrayList();
     
     private DecimalFormat df = new DecimalFormat("0.######");
     
     public Calculator(String Function1Expression, String Function2Expression, int xSectionType, int layersNum, 
-            int upperLimit, int lowerLimit, int actualLength, int riemannSumType, 
-            boolean fPieceWise, boolean gPieceWise) {
+            int lowerLimit, int upperLimit, int actualLength, int riemannSumType) {
         
         this.Function1Expression = Function1Expression;
         this.Function2Expression = Function2Expression;
@@ -50,8 +53,16 @@ public class Calculator {
         this.lowerLimit = lowerLimit;
         this.actualLength = actualLength;
         this.riemannSumType = riemannSumType;
-        this.fPieceWise = fPieceWise;
-        this.gPieceWise = gPieceWise;
+        
+        actualToAlgebraRatio = actualLength/(Math.abs(upperLimit - lowerLimit));
+        
+        setFunctions();
+        mergePieceWiseLimits();
+    }
+    
+    private void setFunctions(){
+        this.fPieceWise = Function1Expression.substring(Function1Expression.indexOf("=")+1).contains(",");
+        this.gPieceWise = Function2Expression.substring(Function2Expression.indexOf("=")+1).contains(",");
         
         if(fPieceWise){
             Function1 = new PieceWiseFunction("f",Function1Expression,"x");
@@ -59,13 +70,114 @@ public class Calculator {
         else{
             Function1 = new Function("f",Function1Expression,"x");
         }
-        Function2 = new Function("f",Function2Expression,"x");
+        
+        if(gPieceWise){
+            Function2 = new PieceWiseFunction("f",Function2Expression,"x");
+            
+        }
+        else{
+            Function2 = new Function("g",Function2Expression,"x");
+        }
+
+    }
+    
+    public void mergePieceWiseLimits(){
+        Argument[][] fLimits = Function1.getPieceWiseLimits();
+        Argument[][] gLimits = Function2.getPieceWiseLimits();
+        /*for(Argument[] a:fLimits){
+            for(Argument b:a){
+                mXparser.consolePrintln("f:"+b.getArgumentValue());
+            }
+        }
+        for(Argument[] a:gLimits){
+            for(Argument b:a){
+                mXparser.consolePrintln("g:"+b.getArgumentValue());
+            }
+        }*/
+        int i = 0, j = 0;
+        int f = fLimits.length*2, g = gLimits.length*2;
+        
+        while(i<f && j<g){
+            if(fLimits[i/2][i%2].getArgumentValue() < gLimits[j/2][j%2].getArgumentValue()){
+                if(!pieceWiseLimits.isEmpty()){
+                    if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
+                            !=fLimits[i/2][i%2].getArgumentValue()){
+                        
+                    pieceWiseLimits.add(fLimits[i/2][i%2]);
+                    }
+                }
+                else{
+                    pieceWiseLimits.add(fLimits[i/2][i%2]);
+                }
+                i++;
+            }
+            else{
+                if(!pieceWiseLimits.isEmpty()){
+                    if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
+                            !=gLimits[j/2][j%2].getArgumentValue()){
+                    pieceWiseLimits.add(gLimits[j/2][j%2]);
+                    }
+                }
+                else{
+                    pieceWiseLimits.add(gLimits[j/2][j%2]);
+                }
+                j++;
+            }
+            
+        }
+        
+        while(i<f){
+            if(!pieceWiseLimits.isEmpty()){
+                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
+                        !=fLimits[i/2][i%2].getArgumentValue()){
+
+                pieceWiseLimits.add(fLimits[i/2][i%2]);
+                }
+            }
+            else{
+                pieceWiseLimits.add(fLimits[i/2][i%2]);
+            }
+            i++;
+        }
+        
+        while(j<g){
+            if(!pieceWiseLimits.isEmpty()){
+                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
+                        !=gLimits[j/2][j%2].getArgumentValue()){
+                pieceWiseLimits.add(gLimits[j/2][j%2]);
+                }
+            }
+            else{
+                pieceWiseLimits.add(gLimits[j/2][j%2]);
+            }
+            j++;
+        }
     }
     
     public double calculateTheoraticalVolume(){
-        Expression volume = new Expression("int((("+Function1.getFunctionExpressionString()
-                +")-("+Function2.getFunctionExpressionString()+"))^2,x,"+lowerLimit+","+upperLimit+")");
-        return volume.calculate();
+        if(pieceWiseLimits.isEmpty()){
+        
+            Expression volume = new Expression("int((("+Function1.getFunctionExpressionString()
+                    +")-("+Function2.getFunctionExpressionString()+"))^2,x,"+lowerLimit+","+upperLimit+")");
+            return volume.calculate();
+            
+        }
+        else{
+            double volumeSum = 0;
+            
+            for(int i=0;i<pieceWiseLimits.size()-1;i++){
+                double lowL=pieceWiseLimits.get(i).getArgumentValue();
+                double upL=pieceWiseLimits.get(i+1).getArgumentValue();
+                        
+                Expression volume = new Expression("int((("+Function1.getFunctionExpressionStringAt(upL)
+                        +")-("+Function2.getFunctionExpressionStringAt(upL)+"))^2,x,"+lowL+","+upL+")");
+                volumeSum += volume.calculate();
+            }
+            
+            return volumeSum;
+            
+        }
+        
     }
 
     public int getRiemannSumType() {
@@ -78,6 +190,14 @@ public class Calculator {
 
     public int getMIN_ACTUAL_LENGTH() {
         return MIN_ACTUAL_LENGTH;
+    }
+    
+    public Function getFunction1(){
+        return Function1;
+    }
+    
+    public Function getFunction2(){
+        return Function2;
     }
 
     public String getFunction1Expression() {
@@ -134,6 +254,18 @@ public class Calculator {
 
     public void setActualLength(int actualLength) {
         this.actualLength = actualLength;
+    }
+    
+    public ArrayList<Argument> getPieceWiseLimits() {
+        return pieceWiseLimits;
+    }
+    
+    public boolean getFunction1Type(){
+        return fPieceWise;
+    }
+    
+    public boolean getFunction2Type(){
+        return gPieceWise;
     }
     
     @Override
