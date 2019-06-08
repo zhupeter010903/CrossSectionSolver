@@ -82,9 +82,10 @@ public class Calculator {
     }
     
     public void mergePieceWiseLimits(){
+        pieceWiseLimits.add(new Argument("x",lowerLimit));
         Argument[][] fLimits = Function1.getPieceWiseLimits();
         Argument[][] gLimits = Function2.getPieceWiseLimits();
-        /*for(Argument[] a:fLimits){
+        for(Argument[] a:fLimits){
             for(Argument b:a){
                 mXparser.consolePrintln("f:"+b.getArgumentValue());
             }
@@ -93,32 +94,24 @@ public class Calculator {
             for(Argument b:a){
                 mXparser.consolePrintln("g:"+b.getArgumentValue());
             }
-        }*/
+        }
         int i = 0, j = 0;
         int f = fLimits.length*2, g = gLimits.length*2;
         
         while(i<f && j<g){
             if(fLimits[i/2][i%2].getArgumentValue() < gLimits[j/2][j%2].getArgumentValue()){
-                if(!pieceWiseLimits.isEmpty()){
-                    if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                            !=fLimits[i/2][i%2].getArgumentValue()){
-                        
-                    pieceWiseLimits.add(fLimits[i/2][i%2]);
-                    }
-                }
-                else{
+                
+                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<fLimits[i/2][i%2].getArgumentValue()
+                        && fLimits[i/2][i%2].getArgumentValue() < upperLimit){
+
                     pieceWiseLimits.add(fLimits[i/2][i%2]);
                 }
                 i++;
             }
             else{
-                if(!pieceWiseLimits.isEmpty()){
-                    if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                            !=gLimits[j/2][j%2].getArgumentValue()){
-                    pieceWiseLimits.add(gLimits[j/2][j%2]);
-                    }
-                }
-                else{
+                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<gLimits[j/2][j%2].getArgumentValue()
+                        && gLimits[j/2][j%2].getArgumentValue() < upperLimit){
+
                     pieceWiseLimits.add(gLimits[j/2][j%2]);
                 }
                 j++;
@@ -127,35 +120,28 @@ public class Calculator {
         }
         
         while(i<f){
-            if(!pieceWiseLimits.isEmpty()){
-                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                        !=fLimits[i/2][i%2].getArgumentValue()){
+            if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<fLimits[i/2][i%2].getArgumentValue()
+                    && fLimits[i/2][i%2].getArgumentValue() < upperLimit){
 
-                pieceWiseLimits.add(fLimits[i/2][i%2]);
-                }
-            }
-            else{
                 pieceWiseLimits.add(fLimits[i/2][i%2]);
             }
             i++;
         }
         
         while(j<g){
-            if(!pieceWiseLimits.isEmpty()){
-                if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()
-                        !=gLimits[j/2][j%2].getArgumentValue()){
-                pieceWiseLimits.add(gLimits[j/2][j%2]);
-                }
-            }
-            else{
+            if(pieceWiseLimits.get(pieceWiseLimits.size()-1).getArgumentValue()<gLimits[j/2][j%2].getArgumentValue()
+                    && gLimits[j/2][j%2].getArgumentValue() < upperLimit){
+
                 pieceWiseLimits.add(gLimits[j/2][j%2]);
             }
             j++;
         }
+        
+        pieceWiseLimits.add(new Argument("x",upperLimit));
     }
     
     public double calculateTheoraticalVolume(){
-        if(pieceWiseLimits.isEmpty()){
+        if(!fPieceWise && !gPieceWise){
         
             Expression volume = new Expression("int((("+Function1.getFunctionExpressionString()
                     +")-("+Function2.getFunctionExpressionString()+"))^2,x,"+lowerLimit+","+upperLimit+")");
@@ -163,6 +149,7 @@ public class Calculator {
             
         }
         else{
+            
             double volumeSum = 0;
             
             for(int i=0;i<pieceWiseLimits.size()-1;i++){
