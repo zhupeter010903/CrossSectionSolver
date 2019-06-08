@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Math/IDC4UB/XSectionSolver/src/xsectionsolver/XSectionSolver.java</file>
-            <file>file:/D:/Math/IDC4UB/XSectionSolver/src/xsectionsolver/Calculator.java</file>
-            <file>file:/D:/Math/IDC4UB/XSectionSolver/src/org/mariuszgromada/math/mxparser/mXparser.java</file>
-            <file>file:/D:/Math/IDC4UB/XSectionSolver/src/xsectionsolver/XSectionGUI.java</file>
+            <file>file:/D:/Math/IDC4UB/CrossSectionSolver/XSectionSolver/src/xsectionsolver/Calculator.java</file>
+            <file>file:/D:/Math/IDC4UB/CrossSectionSolver/XSectionSolver/src/xsectionsolver/XSectionSolver.java</file>
+            <file>file:/D:/Math/IDC4UB/CrossSectionSolver/XSectionSolver/src/org/mariuszgromada/math/mxparser/PieceWiseFunction.java</file>
+            <file>file:/D:/Math/IDC4UB/CrossSectionSolver/XSectionSolver/src/xsectionsolver/XSectionGUI.java</file>
         </group>
     </open-files>
 </project-private>

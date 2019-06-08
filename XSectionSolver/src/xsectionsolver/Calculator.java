@@ -12,17 +12,18 @@ import org.mariuszgromada.math.mxparser.syntaxchecker.*;
 
 public class Calculator {
     
-    final static private int MIN_ACTUAL_LENGTH = 20;
+    final static public int MIN_ACTUAL_LENGTH = 20;
+    final static public int MIN_LAYERS_NUM = 20;
     
-    final static private int XSECTION_SQUARE=0;
-    final static private int XSECTION_CIRCLE=1;
-    final static private int XSECTION_SEMICIRCLE=2;
-    final static private int XSECTION_EQUILIBRIUM_TRIANGLE=3;
-    final static private int XSECTION_RIGHT_ISOSCELES_TRIANGLE=4;
+    final static public int XSECTION_SQUARE=0;
+    final static public int XSECTION_CIRCLE=1;
+    final static public int XSECTION_SEMICIRCLE=2;
+    final static public int XSECTION_EQUILIBRIUM_TRIANGLE=3;
+    final static public int XSECTION_RIGHT_ISOSCELES_TRIANGLE=4;
     
-    final static private int RIGHT_RIEMANNSUM=0;
-    final static private int LEFT_RIEMANNSUM=1;
-    final static private int MIDDLE_RIEMANNSUM=2;
+    final static public int RIGHT_RIEMANNSUM=0;
+    final static public int LEFT_RIEMANNSUM=1;
+    final static public int MIDDLE_RIEMANNSUM=2;
     
     private String Function1Expression;
     private String Function2Expression;
@@ -328,6 +329,14 @@ public class Calculator {
     @Override
     public String toString() {
         return "Calculator{" + "MIN_ACTUAL_LENGTH=" + MIN_ACTUAL_LENGTH + ", f=" + Function1Expression + ", g=" + Function2Expression + ", xSectionType=" + xSectionType + ", layersNum=" + layersNum + ", upperLimit=" + upperLimit + ", lowerLimit=" + lowerLimit + ", actualLength=" + actualLength + ", riemannSumType=" + riemannSumType + '}';
+    }
+
+    public double getActualToAlgebraRatio() {
+        return actualToAlgebraRatio;
+    }
+
+    public void setActualToAlgebraRatio(double actualToAlgebraRatio) {
+        this.actualToAlgebraRatio = actualToAlgebraRatio;
     }
     
 }
