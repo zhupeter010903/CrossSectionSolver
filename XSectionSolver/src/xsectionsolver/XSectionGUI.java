@@ -10,6 +10,7 @@ import org.mariuszgromada.math.mxparser.syntaxchecker.*;
 public class XSectionGUI extends javax.swing.JFrame {
     
     private String welcomeGuide;
+    private Window3d Model3d;
 
     public XSectionGUI() {
         initComponents();
@@ -346,7 +347,8 @@ public class XSectionGUI extends javax.swing.JFrame {
 
     private void btn3DActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3DActionPerformed
 
-
+        Model3d = new Window3d(800,600,"3d model");
+        Model3d.run();
 
     }//GEN-LAST:event_btn3DActionPerformed
 

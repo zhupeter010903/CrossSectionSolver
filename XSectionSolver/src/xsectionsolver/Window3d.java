@@ -254,14 +254,17 @@ public class Window3d {
         glEnd();
     }
     
-    void renderCircleCylinder(float x, float y, float z, float initialR, float step,float length){
+    void renderCircleCylinder(int colorLocation, float x, float y, float z, float initialR, float step,float length){
         for(int i=0;i<length;i+=step){
-            renderCircleCylinderSlice(x,y,z+i,initialR+i,step);
+            renderCircleCylinderSlice(colorLocation,x,y,z+i,initialR+i,step);
         }
     }
     
-    void renderCircleCylinderSlice(float x, float y, float z, float r, float height){
-        int sides=20;
+    void renderCircleCylinderSlice(int colorLocation, float x, float y, float z, float r, float height){
+        int sides=80;
+        //polygons
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glUniform3f(colorLocation, 0.5f, 0.7f, 0.8f);
         
         glBegin(GL11.GL_POLYGON);
         for(int i=0; i<=sides; i++){
@@ -296,6 +299,32 @@ public class Window3d {
             glVertex3f(x+(float)dx2,y+(float)dy2,z+height);
         }
         glEnd();
+        
+        
+        //Lines
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glPolygonOffset(-1.f,-1.f);
+        glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
+        
+        glBegin(GL11.GL_POLYGON);
+        for(int i=0; i<=sides; i++){
+            double angle = Math.PI*2*i/sides;
+            double dx = r*Math.cos(angle);
+            double dy = r*Math.sin(angle);
+            glVertex3f(x+(float)dx,y+(float)dy,z);
+        }
+        glEnd();
+        
+        glBegin(GL11.GL_POLYGON);
+        for(int i=0; i<=sides; i++){
+            double angle = Math.PI*2*i/sides;
+            double dx = r*Math.cos(angle);
+            double dy = r*Math.sin(angle);
+            glVertex3f(x+(float)dx,y+(float)dy,z+height);
+        }
+        glEnd();
+        glDisable(GL_POLYGON_OFFSET_LINE);
     }
 
     void renderGrid() {
@@ -446,13 +475,9 @@ public class Window3d {
             mat.translate(cam.centerMover.target).get(fb);
             
             glLoadMatrixf(fb);
-            //renderCube();
-            //drawSphere(1,20,20);
-            //render();
-            //Shading();
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+             
+            /*glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glUniform3f(colorLocation, 0.5f, 0.7f, 0.8f);
-            //render();
             renderCircleCylinder(0,0,0,1,1,20);
             
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -461,7 +486,8 @@ public class Window3d {
             glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
             //render();
             renderCircleCylinder(0,0,0,1,1,20);
-            glDisable(GL_POLYGON_OFFSET_LINE);
+            glDisable(GL_POLYGON_OFFSET_LINE);*/
+            renderCircleCylinder(colorLocation,0,0,0,1,1,20);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
