@@ -1,8 +1,10 @@
 
 package xsectionsolver;
 
+import static java.lang.Math.PI;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import org.mariuszgromada.math.mxparser.*;
 import org.mariuszgromada.math.mxparser.mathcollection.*;
@@ -14,11 +16,12 @@ public class Calculator {
     
     final static private int MIN_ACTUAL_LENGTH = 20;
     
-    final static private int XSECTION_SQUARE=0;
-    final static private int XSECTION_CIRCLE=1;
-    final static private int XSECTION_SEMICIRCLE=2;
-    final static private int XSECTION_EQUILIBRIUM_TRIANGLE=3;
-    final static private int XSECTION_RIGHT_ISOSCELES_TRIANGLE=4;
+    final static private int XSECTION_SQUARE = 0;
+    final static private int XSECTION_CIRCLE = 1;
+    final static private int XSECTION_SEMICIRCLE = 2;
+    final static private int XSECTION_EQUILIBRIUM_TRIANGLE = 3;
+    final static private int XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE = 4;
+    final static private HashMap<Integer,Double> AreaConstants = new HashMap();
     
     final static private int RIGHT_RIEMANNSUM=0;
     final static private int LEFT_RIEMANNSUM=1;
@@ -56,6 +59,11 @@ public class Calculator {
         
         actualToAlgebraRatio = actualLength/(Math.abs(upperLimit - lowerLimit));
         
+        AreaConstants.put(XSECTION_SQUARE, 1.0d);
+        AreaConstants.put(XSECTION_CIRCLE, PI);
+        AreaConstants.put(XSECTION_SEMICIRCLE, PI/2);
+        AreaConstants.put(XSECTION_EQUILIBRIUM_TRIANGLE, Math.sqrt(3)/4);
+        AreaConstants.put(XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE, 0.25d);
         setFunctions();
         mergePieceWiseLimits();
     }
@@ -85,7 +93,7 @@ public class Calculator {
         pieceWiseLimits.add(new Argument("x",lowerLimit));
         Argument[][] fLimits = Function1.getPieceWiseLimits();
         Argument[][] gLimits = Function2.getPieceWiseLimits();
-        for(Argument[] a:fLimits){
+        /*for(Argument[] a:fLimits){
             for(Argument b:a){
                 mXparser.consolePrintln("f:"+b.getArgumentValue());
             }
@@ -94,7 +102,7 @@ public class Calculator {
             for(Argument b:a){
                 mXparser.consolePrintln("g:"+b.getArgumentValue());
             }
-        }
+        }*/
         int i = 0, j = 0;
         int f = fLimits.length*2, g = gLimits.length*2;
         
@@ -141,11 +149,12 @@ public class Calculator {
     }
     
     public double calculateTheoraticalVolume(){
+        double AreaConstant = AreaConstants.get(xSectionType);
         if(!fPieceWise && !gPieceWise){
         
             Expression volume = new Expression("int((("+Function1.getFunctionExpressionString()
                     +")-("+Function2.getFunctionExpressionString()+"))^2,x,"+lowerLimit+","+upperLimit+")");
-            return volume.calculate();
+            return AreaConstant * volume.calculate();
             
         }
         else{
@@ -161,7 +170,7 @@ public class Calculator {
                 volumeSum += volume.calculate();
             }
             
-            return volumeSum;
+            return AreaConstant * volumeSum;
             
         }
         

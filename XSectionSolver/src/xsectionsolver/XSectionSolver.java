@@ -34,9 +34,9 @@ public class XSectionSolver {
         System.out.println(cal2.getFunction1().getFunctionExpressionString());
         System.out.println(cal2.getFunction2().getFunctionExpressionString());
         
-        for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
+        /*for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
             System.out.println(i+": "+cal2.getPieceWiseLimits().get(i).getArgumentValue());
-        }
+        }*/
         
         Function f3 = new Function("f","arcsin(x)","x");
         Expression e = new Expression("int((arcsec(x)-arccsc(x))^2,x,1,4)");
