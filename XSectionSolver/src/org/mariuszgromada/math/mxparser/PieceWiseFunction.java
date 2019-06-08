@@ -33,20 +33,62 @@ public class PieceWiseFunction extends Function{
         
     }
     
+    public Function getFunctionAt(Argument a){
+        for(int i=0;i<pieceWiseNumber;i++){
+            
+            if (a.getArgumentValue()>=pieceWiseLimits[i][0].getArgumentValue()
+                    && a.getArgumentValue()<=pieceWiseLimits[i][1].getArgumentValue()){
+                return this.getFunction(i);
+            }
+        }
+        return null;
+    }
+    
+    public Function getFunctionAt(double d){
+        for(int i=0;i<pieceWiseNumber;i++){
+            
+            if (d>=pieceWiseLimits[i][0].getArgumentValue()
+                    && d<=pieceWiseLimits[i][1].getArgumentValue()){
+                return this.getFunction(i);
+            }
+        }
+        return null;
+    }
+    
     @Override
     public String getFunctionExpressionString(){
-        String FunctionExpressionString=functionName+" = \n{\n";
-        FunctionExpressionString += "   " +
-                this.getFunction(0).getFunctionExpressionString()
-                +", ["+pieceWiseLimits[0][0].getArgumentValue()+","+pieceWiseLimits[0][1].getArgumentValue()+"]\n";
+        String FunctionExpressionString=functionName+" = \n{ "+this.getFunction(0).getFunctionExpressionString()
+                +", ["+pieceWiseLimits[0][0].getArgumentValue()+","+pieceWiseLimits[0][1].getArgumentValue()+"]";
         
         for(int i=1;i<pieceWiseNumber;i++){
-            FunctionExpressionString += "   " +
+            FunctionExpressionString += "\n  " +
                     this.getFunction(i).getFunctionExpressionString()
-                    +", ("+pieceWiseLimits[i][0].getArgumentValue()+","+pieceWiseLimits[i][1].getArgumentValue()+"]\n";
+                    +", ("+pieceWiseLimits[i][0].getArgumentValue()+","+pieceWiseLimits[i][1].getArgumentValue()+"]";
         }
-        FunctionExpressionString += "}\n";
+        FunctionExpressionString += " }\n";
         return FunctionExpressionString;
+    }
+    
+    public String getFunctionExpressionStringAt(Argument a){
+        for(int i=0;i<pieceWiseNumber;i++){
+            
+            if (a.getArgumentValue()>=pieceWiseLimits[i][0].getArgumentValue()
+                    && a.getArgumentValue()<=pieceWiseLimits[i][1].getArgumentValue()){
+                return this.getFunction(i).getFunctionExpressionString();
+            }
+        }
+        return null;
+    }
+    
+    public String getFunctionExpressionStringAt(double d){
+        for(int i=0;i<pieceWiseNumber;i++){
+            
+            if (d>=pieceWiseLimits[i][0].getArgumentValue()
+                    && d<=pieceWiseLimits[i][1].getArgumentValue()){
+                return this.getFunction(i).getFunctionExpressionString();
+            }
+        }
+        return null;
     }
     
     public double calculate(Argument a){

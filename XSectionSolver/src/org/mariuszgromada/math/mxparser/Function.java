@@ -1158,4 +1158,28 @@ public class Function extends PrimitiveElement {
 		if (functionBodyType == Function.BODY_RUNTIME)
 			functionExpression.setExpressionModifiedFlag();
 	}
+        
+        public Argument[][] getPieceWiseLimits() {
+            if(this instanceof PieceWiseFunction){
+                return ((PieceWiseFunction)this).getPieceWiseLimits();
+            }
+            Argument[][] pieceWiseLimits = new Argument[0][0];
+            return pieceWiseLimits;
+        }
+        
+        public String getFunctionExpressionStringAt(double d){
+            return getFunctionExpressionString();
+        }
+        
+        public String getFunctionExpressionStringAt(Argument a){
+            return getFunctionExpressionString();
+        }
+        
+        public Function getFunctionAt(double d){
+            return this;
+        }
+        
+        public Function getFunctionAt(Argument a){
+            return this;
+        }
 }
