@@ -36,7 +36,7 @@ public class Calculator {
     private int layersNum;
     private int upperLimit;
     private int lowerLimit;
-    private int actualLength;
+    private double actualLength;
     private int riemannSumType;
     private boolean fPieceWise;
     private boolean gPieceWise;
@@ -176,6 +176,33 @@ public class Calculator {
         }
         
     }
+    
+    public double calculateRSumVolume() {return 0;
+}
+    
+    public double sliceXPos(int i) {return 0;
+}
+    
+    public double sliceActualPos(int i) {return 0;
+}
+    
+    public double baseLength(int i) {return 0;
+}
+    
+    public double sliceThinkness() {
+    
+        return (actualLength * 1.0) / (layersNum * 1.0);
+    
+    }
+    
+    public double surfaceArea(int i) {return 0;
+}
+    
+    public double layerVolume(int i) {return 0;
+}
+    
+    public double[] yBoundary(int i) {return null;
+}
 
     public int getRiemannSumType() {
         return riemannSumType;
@@ -245,14 +272,6 @@ public class Calculator {
         this.lowerLimit = lowerLimit;
     }
 
-    public int getActualLength() {
-        return actualLength;
-    }
-
-    public void setActualLength(int actualLength) {
-        this.actualLength = actualLength;
-    }
-    
     public ArrayList<Argument> getPieceWiseLimits() {
         return pieceWiseLimits;
     }
@@ -333,6 +352,14 @@ public class Calculator {
 
     public void setActualToAlgebraRatio(double actualToAlgebraRatio) {
         this.actualToAlgebraRatio = actualToAlgebraRatio;
+    }
+
+    public double getActualLength() {
+        return actualLength;
+    }
+
+    public void setActualLength(double actualLength) {
+        this.actualLength = actualLength;
     }
     
 }

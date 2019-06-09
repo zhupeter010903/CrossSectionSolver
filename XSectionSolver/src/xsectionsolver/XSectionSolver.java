@@ -43,10 +43,10 @@ public class XSectionSolver {
         //mXparser.consolePrintln(f3.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
         //System.out.println(cal2.calculateTheoraticalVolume());
         
-        //Window3d threeD= new Window3d(800,600,"3d model");
+        Window3d threeD= new Window3d(800,600,"3d model");
         //threeD.run();
-        //new XSectionGUI().run();
-        new XSectionGUI().setVisible(true);
+        new XSectionGUI().run();
+        //new XSectionGUI().setVisible(true);
     }
     
 }
