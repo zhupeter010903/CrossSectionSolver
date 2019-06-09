@@ -45,7 +45,7 @@ public class Calculator {
     
     private ArrayList<Argument> pieceWiseLimits = new ArrayList();
     
-    private DecimalFormat df = new DecimalFormat("0.######");
+    public static DecimalFormat df = new DecimalFormat("0.######");
     
     public Calculator(String Function1Expression, String Function2Expression, int xSectionType, int layersNum, 
             int lowerLimit, int upperLimit, int actualLength, int riemannSumType) {
@@ -181,7 +181,7 @@ public class Calculator {
     
     public double calculateRSumVolume() {
         double volumeSum = 0;
-        for (double i=lowerLimit; RoundToSixDecimal(i)<upperLimit; i+=stepLength){
+        for (double i=lowerLimit; Round(i,6)<upperLimit; i+=stepLength){
             double x;
             switch (riemannSumType) {
                 case RIGHT_RIEMANNSUM:
@@ -197,15 +197,15 @@ public class Calculator {
             double y1=Function1.calculate(new Argument("x="+x));
             double y2=Function2.calculate(new Argument("x="+x));
             volumeSum += AreaConstants.get(xSectionType)*Math.pow(y1-y2,2)*stepLength;
-            //System.out.println(RoundToSixDecimal(x)+","+RoundToSixDecimal(y1)+","+RoundToSixDecimal(y2)+","+(RoundToSixDecimal(Math.pow(y1-y2,2)*stepLength)));
+            //System.out.println(Round(x,6)+","+Round(y1,6)+","+Round(y2,6)+","+Round(Math.pow(y1-y2,2)*stepLength,6));
             
         }
         
         return volumeSum;
     }
     
-    public static double RoundToSixDecimal(double d){
-        return Math.round(d*1000000.d)/1000000.d;
+    public static double Round(double d, int decimalPlace){
+        return Math.round(d*Math.pow(10, decimalPlace))/Math.pow(10, decimalPlace);
     }
     
     public double sliceXPos(int i) {return 0;
