@@ -183,30 +183,29 @@ public class Calculator {
         double volumeSum = 0;
         for (double i=lowerLimit; RoundToSixDecimal(i)<upperLimit; i+=stepLength){
             double x;
-            if (riemannSumType == RIGHT_RIEMANNSUM){
-                x=i;
-            }
-            else if (riemannSumType == LEFT_RIEMANNSUM){
-                x=i+stepLength;
-            }
-            else {
-                x=i+stepLength/2;
+            switch (riemannSumType) {
+                case RIGHT_RIEMANNSUM:
+                    x=i;
+                    break;
+                case LEFT_RIEMANNSUM:
+                    x=i+stepLength;
+                    break;
+                default:
+                    x=i+stepLength/2;
+                    break;
             }
             double y1=Function1.calculate(new Argument("x="+x));
             double y2=Function2.calculate(new Argument("x="+x));
-            volumeSum += AreaConstants.get(xSectionType)*Math.pow(y1-y2,2);
-            //System.out.println(RoundToSixDecimal(x)+","+RoundToSixDecimal(y1)+","+y2+","+(RoundToSixDecimal(Math.pow(y1-y2,2))));
+            volumeSum += AreaConstants.get(xSectionType)*Math.pow(y1-y2,2)*stepLength;
+            //System.out.println(RoundToSixDecimal(x)+","+RoundToSixDecimal(y1)+","+RoundToSixDecimal(y2)+","+(RoundToSixDecimal(Math.pow(y1-y2,2)*stepLength)));
             
         }
         
         return volumeSum;
     }
     
-    public double RoundToSixDecimal(double d){
-        d*=1000000;
-        d=Math.round(d);
-        d/=1000000;
-        return d;
+    public static double RoundToSixDecimal(double d){
+        return Math.round(d*1000000.d)/1000000.d;
     }
     
     public double sliceXPos(int i) {return 0;
