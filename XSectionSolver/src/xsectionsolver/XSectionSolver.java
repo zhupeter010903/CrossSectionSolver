@@ -29,7 +29,8 @@ public class XSectionSolver {
         System.out.println(cal.calculateTheoraticalVolume());*/
         
         
-        Calculator cal2 = new Calculator("arcsec(x),-4,-1,arcsin(x),-1,1,arcsec(x),1,4","arccsc(x),-4,-1,arccos(x),-1,1,arccsc(x),1,4",0,20,-4,4,20,0);
+        Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
+                ,"arccsc(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4",0,100,-4,4,20,0);
         
         System.out.println(cal2.getFunction1().getFunctionExpressionString());
         System.out.println(cal2.getFunction2().getFunctionExpressionString());
@@ -42,10 +43,12 @@ public class XSectionSolver {
         Expression e = new Expression("int((arcsec(x)-arccsc(x))^2,x,1,4)");
         //mXparser.consolePrintln(f3.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
         //System.out.println(cal2.calculateTheoraticalVolume());
+        Calculator cal3 = new Calculator("2*x","0",0,20,-4,4,20,0);
+        System.out.println(Calculator.Round(cal2.calculateRSumVolume(),6));
         
         Window3d threeD= new Window3d(800,600,"3d model");
         //threeD.run();
-        new XSectionGUI().run();
+        //new XSectionGUI().run();
         //new XSectionGUI().setVisible(true);
     }
     
