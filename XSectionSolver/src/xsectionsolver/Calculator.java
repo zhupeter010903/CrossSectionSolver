@@ -283,21 +283,6 @@ public class Calculator {
     public boolean getFunction2Type(){
         return gPieceWise;
     }
-    
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 13 * hash + this.MIN_ACTUAL_LENGTH;
-        hash = 13 * hash + Objects.hashCode(this.Function1Expression);
-        hash = 13 * hash + Objects.hashCode(this.Function2Expression);
-        hash = 13 * hash + this.xSectionType;
-        hash = 13 * hash + this.layersNum;
-        hash = 13 * hash + this.upperLimit;
-        hash = 13 * hash + this.lowerLimit;
-        hash = 13 * hash + this.actualLength;
-        hash = 13 * hash + this.riemannSumType;
-        return hash;
-    }
 
     @Override
     public boolean equals(Object obj) {
