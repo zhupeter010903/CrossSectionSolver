@@ -34,13 +34,14 @@ public class Calculator {
     private Function Function2;
     private int xSectionType;
     private int layersNum;
-    private int upperLimit;
-    private int lowerLimit;
+    private double upperLimit;
+    private double lowerLimit;
     private double actualLength;
     private int riemannSumType;
     private boolean fPieceWise;
     private boolean gPieceWise;
     private double actualToAlgebraRatio;
+    private double stepLength;
     
     private ArrayList<Argument> pieceWiseLimits = new ArrayList();
     
@@ -59,11 +60,12 @@ public class Calculator {
         this.riemannSumType = riemannSumType;
         
         actualToAlgebraRatio = actualLength/(Math.abs(upperLimit - lowerLimit));
+        stepLength = Math.abs(upperLimit - lowerLimit) / (double)layersNum;
         
         AreaConstants.put(XSECTION_SQUARE, 1.0d);
-        AreaConstants.put(XSECTION_CIRCLE, PI);
-        AreaConstants.put(XSECTION_SEMICIRCLE, PI/2);
-        AreaConstants.put(XSECTION_EQUILIBRIUM_TRIANGLE, Math.sqrt(3)/4);
+        AreaConstants.put(XSECTION_CIRCLE, PI/4.);
+        AreaConstants.put(XSECTION_SEMICIRCLE, PI/8.);
+        AreaConstants.put(XSECTION_EQUILIBRIUM_TRIANGLE, Math.sqrt(3)/4.);
         AreaConstants.put(XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE, 0.25d);
         setFunctions();
         mergePieceWiseLimits();
@@ -177,32 +179,69 @@ public class Calculator {
         
     }
     
-    public double calculateRSumVolume() {return 0;
-}
+    public double calculateRSumVolume() {
+        double volumeSum = 0;
+        for (double i=lowerLimit; RoundToSixDecimal(i)<upperLimit; i+=stepLength){
+            double x;
+            if (riemannSumType == RIGHT_RIEMANNSUM){
+                x=i;
+            }
+            else if (riemannSumType == LEFT_RIEMANNSUM){
+                x=i+stepLength;
+            }
+            else {
+                x=i+stepLength/2;
+            }
+            double y1=Function1.calculate(new Argument("x="+x));
+            double y2=Function2.calculate(new Argument("x="+x));
+            volumeSum += AreaConstants.get(xSectionType)*Math.pow(y1-y2,2);
+            //System.out.println(RoundToSixDecimal(x)+","+RoundToSixDecimal(y1)+","+y2+","+(RoundToSixDecimal(Math.pow(y1-y2,2))));
+            
+        }
+        
+        return volumeSum;
+    }
+    
+    public double RoundToSixDecimal(double d){
+        d*=1000000;
+        d=Math.round(d);
+        d/=1000000;
+        return d;
+    }
     
     public double sliceXPos(int i) {return 0;
-}
+    }
     
     public double sliceActualPos(int i) {return 0;
-}
+    }
     
     public double baseLength(int i) {return 0;
-}
+    }
     
-    public double sliceThinkness() {
+    public double getStepLength() {
     
-        return (actualLength * 1.0) / (layersNum * 1.0);
+        return stepLength;
     
     }
     
+    public double getLayerThickness() {
+    
+        return actualToAlgebraRatio * stepLength;
+    
+    }
+    
+    public double getActualToAlgebraRatio(){
+        return actualToAlgebraRatio;
+    }
+    
     public double surfaceArea(int i) {return 0;
-}
+    }
     
     public double layerVolume(int i) {return 0;
-}
+    }
     
     public double[] yBoundary(int i) {return null;
-}
+    }
 
     public int getRiemannSumType() {
         return riemannSumType;
@@ -256,19 +295,19 @@ public class Calculator {
         this.layersNum = layersNum;
     }
 
-    public int getUpperLimit() {
+    public double getUpperLimit() {
         return upperLimit;
     }
 
-    public void setUpperLimit(int upperLimit) {
+    public void setUpperLimit(double upperLimit) {
         this.upperLimit = upperLimit;
     }
 
-    public int getLowerLimit() {
+    public double getLowerLimit() {
         return lowerLimit;
     }
 
-    public void setLowerLimit(int lowerLimit) {
+    public void setLowerLimit(double lowerLimit) {
         this.lowerLimit = lowerLimit;
     }
 
@@ -329,10 +368,6 @@ public class Calculator {
     @Override
     public String toString() {
         return "Calculator{" + "MIN_ACTUAL_LENGTH=" + MIN_ACTUAL_LENGTH + ", f=" + Function1Expression + ", g=" + Function2Expression + ", xSectionType=" + xSectionType + ", layersNum=" + layersNum + ", upperLimit=" + upperLimit + ", lowerLimit=" + lowerLimit + ", actualLength=" + actualLength + ", riemannSumType=" + riemannSumType + '}';
-    }
-
-    public double getActualToAlgebraRatio() {
-        return actualToAlgebraRatio;
     }
 
     public void setActualToAlgebraRatio(double actualToAlgebraRatio) {

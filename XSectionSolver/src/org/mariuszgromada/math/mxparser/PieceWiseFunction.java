@@ -91,7 +91,9 @@ public class PieceWiseFunction extends Function{
         return null;
     }
     
-    public double calculate(Argument a){
+    @Override
+    public double calculate(Argument... arguments){
+        Argument a = arguments[0];
         for(int i=0;i<pieceWiseNumber;i++){
             
             if (a.getArgumentValue()>=pieceWiseLimits[i][0].getArgumentValue()
