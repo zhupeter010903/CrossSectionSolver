@@ -42,6 +42,7 @@ public class Calculator {
     private boolean gPieceWise;
     private double actualToAlgebraRatio;
     private double stepLength;
+    private double riemannSumAdjustment;
     
     private ArrayList<Argument> pieceWiseLimits = new ArrayList();
     
@@ -61,11 +62,12 @@ public class Calculator {
         
         actualToAlgebraRatio = actualLength/(Math.abs(upperLimit - lowerLimit));
         stepLength = Math.abs(upperLimit - lowerLimit) / (double)layersNum;
+        riemannSumAdjustment = this.getRSumAdjustment();
         
         AreaConstants.put(XSECTION_SQUARE, 1.0d);
-        AreaConstants.put(XSECTION_CIRCLE, PI/4.);
-        AreaConstants.put(XSECTION_SEMICIRCLE, PI/8.);
-        AreaConstants.put(XSECTION_EQUILIBRIUM_TRIANGLE, Math.sqrt(3)/4.);
+        AreaConstants.put(XSECTION_CIRCLE, PI/4.0d);
+        AreaConstants.put(XSECTION_SEMICIRCLE, PI/8.0d);
+        AreaConstants.put(XSECTION_EQUILIBRIUM_TRIANGLE, Math.sqrt(3)/4.0d);
         AreaConstants.put(XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE, 0.25d);
         setFunctions();
         mergePieceWiseLimits();
@@ -92,7 +94,7 @@ public class Calculator {
 
     }
     
-    public void mergePieceWiseLimits(){
+    private void mergePieceWiseLimits(){
         pieceWiseLimits.add(new Argument("x",lowerLimit));
         Argument[][] fLimits = Function1.getPieceWiseLimits();
         Argument[][] gLimits = Function2.getPieceWiseLimits();
@@ -181,40 +183,39 @@ public class Calculator {
     
     public double calculateRSumVolume() {
         double volumeSum = 0;
-        for (double i=lowerLimit; Round(i,6)<upperLimit; i+=stepLength){
-            double x;
-            switch (riemannSumType) {
-                case RIGHT_RIEMANNSUM:
-                    x=i;
-                    break;
-                case LEFT_RIEMANNSUM:
-                    x=i+stepLength;
-                    break;
-                default:
-                    x=i+stepLength/2;
-                    break;
-            }
-            double y1=Function1.calculate(new Argument("x="+x));
-            double y2=Function2.calculate(new Argument("x="+x));
-            volumeSum += AreaConstants.get(xSectionType)*Math.pow(y1-y2,2)*stepLength;
-            //System.out.println(Round(x,6)+","+Round(y1,6)+","+Round(y2,6)+","+Round(Math.pow(y1-y2,2)*stepLength,6));
-            
+        for (int i=0; i<layersNum; i++){
+            volumeSum += this.layerVolume(i);
         }
         
         return volumeSum;
+    }
+    
+    public double getRSumAdjustment(){
+        switch (riemannSumType) {
+            case RIGHT_RIEMANNSUM:
+                return 0;
+            case LEFT_RIEMANNSUM:
+                return stepLength;
+            default:
+                return stepLength/2;
+        }
     }
     
     public static double Round(double d, int decimalPlace){
         return Math.round(d*Math.pow(10, decimalPlace))/Math.pow(10, decimalPlace);
     }
     
-    public double sliceXPos(int i) {return 0;
+    public double sliceXPos(int i) {
+        return lowerLimit+i*stepLength;
     }
     
-    public double sliceActualPos(int i) {return 0;
+    public double sliceActualPos(int i) {
+        return i*stepLength*actualToAlgebraRatio;
     }
     
-    public double baseLength(int i) {return 0;
+    public double baseLength(int i) {
+        
+        return yBoundary(i)[0]-yBoundary(i)[1];
     }
     
     public double getStepLength() {
@@ -233,13 +234,26 @@ public class Calculator {
         return actualToAlgebraRatio;
     }
     
-    public double surfaceArea(int i) {return 0;
+    public double surfaceArea(int i) {
+        double baseLength = baseLength(i);
+        double area = Math.pow(baseLength, 2)*AreaConstants.get(this.xSectionType);
+        return area;
     }
     
-    public double layerVolume(int i) {return 0;
+    public double layerVolume(int i) {
+        return surfaceArea(i)*stepLength;
     }
     
-    public double[] yBoundary(int i) {return null;
+    public double[] yBoundary(int i) {
+        double[] yBound = new double[2];
+        
+        double x = sliceXPos(i);
+        x += riemannSumAdjustment;
+        double y1 = Function1.calculate(new Argument("x="+x));
+        double y2 = Function2.calculate(new Argument("x="+x));
+        yBound[0] = Math.max(y1, y2);
+        yBound[1] = Math.min(y1, y2);
+        return yBound;
     }
 
     public int getRiemannSumType() {
