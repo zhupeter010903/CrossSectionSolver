@@ -57,7 +57,7 @@ public class PieceWiseFunction extends Function{
     
     @Override
     public String getFunctionExpressionString(){
-        String FunctionExpressionString=functionName+" = \n{ "+this.getFunction(0).getFunctionExpressionString()
+        String FunctionExpressionString="\n{ "+this.getFunction(0).getFunctionExpressionString()
                 +", ["+pieceWiseLimits[0][0].getArgumentValue()+","+pieceWiseLimits[0][1].getArgumentValue()+"]";
         
         for(int i=1;i<pieceWiseNumber;i++){
@@ -65,7 +65,7 @@ public class PieceWiseFunction extends Function{
                     this.getFunction(i).getFunctionExpressionString()
                     +", ("+pieceWiseLimits[i][0].getArgumentValue()+","+pieceWiseLimits[i][1].getArgumentValue()+"]";
         }
-        FunctionExpressionString += " }\n";
+        FunctionExpressionString += " }";
         return FunctionExpressionString;
     }
     

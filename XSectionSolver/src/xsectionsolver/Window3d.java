@@ -15,7 +15,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL20.glAttachShader;
 import static org.lwjgl.opengl.GL20.glCompileShader;
 import static org.lwjgl.opengl.GL20.glCreateProgram;
@@ -45,11 +44,17 @@ public class Window3d {
     private double fps_cap=60, time, processedTime = 0;
     boolean[] keyDown = new boolean[GLFW.GLFW_KEY_LAST + 1];
     private boolean keys[]=new boolean[GLFW.GLFW_KEY_LAST];
+    private Calculator cal;
     
     public Window3d(int width, int height, String title){
         this.width = width;
         this.height = height;
         this.title = title;
+    }
+    
+    public Window3d(int width, int height, String title, Calculator cal){
+        this(width, height, title);
+        this.cal = cal;
     }
 
     void run() {
@@ -57,6 +62,7 @@ public class Window3d {
             init();
             if(isUpdating()){
                 loop();
+                //threadLoop();
             }
             glfwDestroyWindow(window);
             keyCallback.free();
@@ -67,7 +73,9 @@ public class Window3d {
         } finally {
             glfwTerminate();
             errorCallback.free();
+            new XSectionGUI().run();
         }
+        
     }
 
     ArcBallCamera cam = new ArcBallCamera();
@@ -220,38 +228,11 @@ public class Window3d {
     }
     
     void render(){
-        //glColor3f(0.5f, 0.6f, 0.7f);
-        
-        glBegin(GL11.GL_POLYGON);
-        glVertex3f(0,0,0);
-        glVertex3f(0,1,0);
-        glVertex3f(1,1,0);
-        glVertex3f(1,0,0);
-        glEnd();
-        
-        glBegin(GL11.GL_POLYGON);
-        glVertex3f(0,0,1);
-        glVertex3f(0,2,1);
-        glVertex3f(2,2,1);
-        glVertex3f(2,0,1);
-        glEnd();
-        
-        glBegin(GL_QUAD_STRIP);
-        glVertex3f(0,0,0);
-        glVertex3f(0,0,1);
-        
-        glVertex3f(0,1,0);
-        glVertex3f(0,2,1);
-        
-        glVertex3f(1,1,0);
-        glVertex3f(2,2,1);
-        
-        glVertex3f(1,0,0);
-        glVertex3f(2,0,1);
-        
-        glVertex3f(0,0,0);
-        glVertex3f(0,0,1);
-        glEnd();
+        int crossSectionType = cal.getxSectionType();
+        switch(crossSectionType){
+            case(Calculator.XSECTION_CIRCLE):
+                break;
+        }
     }
     
     void renderCircleCylinder(int colorLocation, float x, float y, float z, float initialR, float step,float length){
@@ -379,6 +360,18 @@ public class Window3d {
          }
          
          return false;
+    }
+    
+    void threadLoop(){
+        new Thread(new Runnable() {
+            public void run() {
+                loop();
+            }
+        }).start();
+
+        while (!glfwWindowShouldClose(window)) {
+            glfwWaitEvents();
+        }
     }
     
     void loop() {

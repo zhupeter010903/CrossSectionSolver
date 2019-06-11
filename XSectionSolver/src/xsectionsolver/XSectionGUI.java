@@ -383,6 +383,7 @@ public class XSectionGUI extends javax.swing.JFrame {
     }
     
     public void run(){
+        System.out.println("run");
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -400,10 +401,11 @@ public class XSectionGUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(XSectionGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        //this.setVisible(true);
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                System.out.println("run2");
                 new XSectionGUI().setVisible(true);
             }
         });
