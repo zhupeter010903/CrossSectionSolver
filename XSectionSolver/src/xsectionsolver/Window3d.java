@@ -33,18 +33,22 @@ public class Window3d {
     GLFWScrollCallback sCallback;
     GLFWMouseButtonCallback mbCallback;
 
-    long window;
-    int width = 800;
-    int height = 600;
-    int x, y;
-    float zoom = 20;
-    int mouseX, mouseY;
-    boolean down;
-    String title = "Hello ArcBall Camera!";
+    private long window;
+    private int width = 800;
+    private int height = 600;
+    private int x, y;
+    private float zoom = 20;
+    private float lookx=0;
+    private float looky=0;
+    private float lookz=0;
+    private int mouseX, mouseY;
+    private boolean down;
+    private String title = "Hello ArcBall Camera!";
     private double fps_cap=60, time, processedTime = 0;
-    boolean[] keyDown = new boolean[GLFW.GLFW_KEY_LAST + 1];
+    private boolean[] keyDown = new boolean[GLFW.GLFW_KEY_LAST + 1];
     private boolean keys[]=new boolean[GLFW.GLFW_KEY_LAST];
     private Calculator cal;
+    private float[][] graphData;
     
     public Window3d(int width, int height, String title){
         this.width = width;
@@ -55,6 +59,16 @@ public class Window3d {
     public Window3d(int width, int height, String title, Calculator cal){
         this(width, height, title);
         this.cal = cal;
+        
+        graphData = new float[cal.getLayersNum()][5];
+        for(int i=0;i<cal.getLayersNum();i++){
+            float y = (float)(cal.getYBoundaryActual(i)[0]+cal.getYBoundaryActual(i)[1])/2.f;
+            graphData[i][0] = y;
+            graphData[i][1] = 0;
+            graphData[i][2] = (float)cal.getSliceActualXPos(i);
+            graphData[i][3] = (float)cal.getBaseLengthActual(i)/2.f;
+            graphData[i][4] = (float)cal.getLayerThickness();
+        }
     }
 
     void run() {
@@ -73,7 +87,6 @@ public class Window3d {
         } finally {
             glfwTerminate();
             errorCallback.free();
-            new XSectionGUI().run();
         }
         
     }
@@ -95,7 +108,6 @@ public class Window3d {
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
-        System.out.println("Press ENTER to randomly reposition the cube on the grid.");
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
@@ -227,21 +239,221 @@ public class Window3d {
         }
     }
     
-    void render(){
+    void render(int colorLocation){
         int crossSectionType = cal.getxSectionType();
         switch(crossSectionType){
+            case(Calculator.XSECTION_SQUARE):
+                renderSquare(colorLocation);
+                break;
             case(Calculator.XSECTION_CIRCLE):
+                renderCircleCylinder(colorLocation);
+                break;
+            case(Calculator.XSECTION_SEMICIRCLE):
+                renderSemiCircleCylinder(colorLocation);
+                break;
+            case(Calculator.XSECTION_EQUILIBRIUM_TRIANGLE):
+                renderIsoscelesTriangle(colorLocation,(float)Math.sqrt(3));
+                break;
+            case(Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE):
+                renderIsoscelesTriangle(colorLocation,1.f);
+                break;
+            default:
                 break;
         }
     }
     
-    void renderCircleCylinder(int colorLocation, float x, float y, float z, float initialR, float step,float length){
-        for(int i=0;i<length;i+=step){
-            renderCircleCylinderSlice(colorLocation,x,y,z+i,initialR+i,step);
+    private void renderSquare(int colorLocation){
+        for(int i=0;i<cal.getLayersNum();i++){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glUniform3f(colorLocation, 0.5f, 0.7f, 0.8f);
+            
+            renderSquareSlice(graphData[i][0],graphData[i][1],
+                    graphData[i][2],graphData[i][3],graphData[i][4]);
+            
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glEnable(GL_POLYGON_OFFSET_LINE);
+            glPolygonOffset(-1.f,-1.f);
+            glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
+            renderSquareSlice(graphData[i][0],graphData[i][1],
+                    graphData[i][2],graphData[i][3],graphData[i][4]);
+            glDisable(GL_POLYGON_OFFSET_LINE);
         }
     }
     
-    void renderCircleCylinderSlice(int colorLocation, float x, float y, float z, float r, float height){
+    private void renderSquareSlice(float x, float y, float z, float r, float thickness){
+        glBegin(GL11.GL_POLYGON);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x+r,y,z);
+        glVertex3f(x+r,y+2*r,z);
+        glVertex3f(x-r,y+2*r,z);
+        glEnd();
+        
+        glBegin(GL11.GL_POLYGON);
+        glVertex3f(x-r,y,z+thickness);
+        glVertex3f(x+r,y,z+thickness);
+        glVertex3f(x+r,y+2*r,z+thickness);
+        glVertex3f(x-r,y+2*r,z+thickness);
+        glEnd();
+        
+        glBegin(GL_QUAD_STRIP);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x-r,y,z+thickness);
+        glVertex3f(x+r,y,z);
+        glVertex3f(x+r,y,z+thickness);
+        glVertex3f(x+r,y+2*r,z);
+        glVertex3f(x+r,y+2*r,z+thickness);
+        glVertex3f(x-r,y+2*r,z);
+        glVertex3f(x-r,y+2*r,z+thickness);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x-r,y,z+thickness);
+        glEnd();
+    }
+    
+    private void renderIsoscelesTriangle(int colorLocation,float heightRatio){
+        for(int i=0;i<cal.getLayersNum();i++){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glUniform3f(colorLocation, 0.5f, 0.7f, 0.8f);
+            
+            renderIsoscelesTriangleSlice(graphData[i][0],graphData[i][1],
+                    graphData[i][2],graphData[i][3],graphData[i][4],heightRatio);
+            
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glEnable(GL_POLYGON_OFFSET_LINE);
+            glPolygonOffset(-1.f,-1.f);
+            glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
+            renderIsoscelesTriangleSlice(graphData[i][0],graphData[i][1],
+                    graphData[i][2],graphData[i][3],graphData[i][4],heightRatio);
+            glDisable(GL_POLYGON_OFFSET_LINE);
+        }
+    }
+    
+    private void renderIsoscelesTriangleSlice(float x, float y, float z, float r, float thickness,float heightRatio){
+        
+        glBegin(GL11.GL_POLYGON);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x+r,y,z);
+        glVertex3f(x,y+r*heightRatio,z);
+        glEnd();
+        
+        glBegin(GL11.GL_POLYGON);
+        glVertex3f(x-r,y,z+thickness);
+        glVertex3f(x+r,y,z+thickness);
+        glVertex3f(x,y+r*heightRatio,z+thickness);
+        glEnd();
+        
+        glBegin(GL_QUAD_STRIP);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x-r,y,z+thickness);
+        glVertex3f(x+r,y,z);
+        glVertex3f(x+r,y,z+thickness);
+        glVertex3f(x,y+r*heightRatio,z);
+        glVertex3f(x,y+r*heightRatio,z+thickness);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x-r,y,z+thickness);
+        glEnd();
+    }
+    
+    private void renderSemiCircleCylinder(int colorLocation){
+        for(int i=0;i<cal.getLayersNum();i++){
+            renderSemiCircleCylinderSlice(colorLocation,graphData[i][0],graphData[i][1],
+                    graphData[i][2],graphData[i][3],graphData[i][4]);
+        }
+    }
+    
+    private void renderSemiCircleCylinderSlice(int colorLocation, float x, float y, float z, float r, float thickness){
+        int sides=40;
+        //polygons
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glUniform3f(colorLocation, 0.5f, 0.7f, 0.8f);
+        
+        glBegin(GL11.GL_POLYGON);
+        for(int i=0; i<=sides; i++){
+            double angle = Math.PI*i/(sides);
+            double dx = r*Math.cos(angle);
+            double dy = r*Math.sin(angle);
+            glVertex3f(x+(float)dx,y+(float)dy,z);
+        }
+        glEnd();
+        
+        glBegin(GL11.GL_POLYGON);
+        for(int i=0; i<=sides; i++){
+            double angle = Math.PI*i/(sides);
+            double dx = r*Math.cos(angle);
+            double dy = r*Math.sin(angle);
+            glVertex3f(x+(float)dx,y+(float)dy,z+thickness);
+        }
+        glEnd();
+        
+        glBegin(GL_QUAD_STRIP);
+        for(int i=0; i<=sides; i++){
+            double angle1 = Math.PI*i/(sides);
+            double dx1 = r*Math.cos(angle1);
+            double dy1 = r*Math.sin(angle1);
+            
+            double angle2 = Math.PI*i/(sides);
+            double dx2 = r*Math.cos(angle2);
+            double dy2 = r*Math.sin(angle2);
+            glVertex3f(x+(float)dx1,y+(float)dy1,z);
+            glVertex3f(x+(float)dx1,y+(float)dy1,z+thickness);
+            glVertex3f(x+(float)dx2,y+(float)dy2,z);
+            glVertex3f(x+(float)dx2,y+(float)dy2,z+thickness);
+        }
+        double dx1 = r;
+        double dy1 = 0;
+
+        double angle2 = Math.PI*1/(sides);
+        double dx2 = r*Math.cos(angle2);
+        double dy2 = r*Math.sin(angle2);
+        glVertex3f(x+(float)dx1,y+(float)dy1,z);
+        glVertex3f(x+(float)dx1,y+(float)dy1,z+thickness);
+        glVertex3f(x+(float)dx2,y+(float)dy2,z);
+        glVertex3f(x+(float)dx2,y+(float)dy2,z+thickness);
+        
+        glEnd();
+        
+        
+        //Lines
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glPolygonOffset(-1.f,-1.f);
+        glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
+        
+        glBegin(GL11.GL_POLYGON);
+        for(int i=0; i<=sides; i++){
+            double angle = Math.PI*i/sides;
+            double dx = r*Math.cos(angle);
+            double dy = r*Math.sin(angle);
+            glVertex3f(x+(float)dx,y+(float)dy,z);
+        }
+        glEnd();
+        
+        glBegin(GL11.GL_POLYGON);
+        for(int i=0; i<=sides; i++){
+            double angle = Math.PI*i/sides;
+            double dx = r*Math.cos(angle);
+            double dy = r*Math.sin(angle);
+            glVertex3f(x+(float)dx,y+(float)dy,z+thickness);
+        }
+        glEnd();
+        
+        glBegin(GL11.GL_POLYGON);
+        glVertex3f(x-r,y,z);
+        glVertex3f(x+r,y,z);
+        glVertex3f(x+r,y,z+thickness);
+        glVertex3f(x-r,y,z+thickness);
+        glEnd();
+        
+        glDisable(GL_POLYGON_OFFSET_LINE);
+    }
+    
+    private void renderCircleCylinder(int colorLocation/*, float x, float y, float z, float initialR, float step,float length*/){
+        for(int i=0;i<cal.getLayersNum();i++){
+            renderCircleCylinderSlice(colorLocation,graphData[i][0],graphData[i][1],
+                    graphData[i][2],graphData[i][3],graphData[i][4]);
+        }
+    }
+    
+    private void renderCircleCylinderSlice(int colorLocation, float x, float y, float z, float r, float thickness){
         int sides=80;
         //polygons
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -261,7 +473,7 @@ public class Window3d {
             double angle = Math.PI*2*i/sides;
             double dx = r*Math.cos(angle);
             double dy = r*Math.sin(angle);
-            glVertex3f(x+(float)dx,y+(float)dy,z+height);
+            glVertex3f(x+(float)dx,y+(float)dy,z+thickness);
         }
         glEnd();
         
@@ -275,9 +487,9 @@ public class Window3d {
             double dx2 = r*Math.cos(angle2);
             double dy2 = r*Math.sin(angle2);
             glVertex3f(x+(float)dx1,y+(float)dy1,z);
-            glVertex3f(x+(float)dx1,y+(float)dy1,z+height);
+            glVertex3f(x+(float)dx1,y+(float)dy1,z+thickness);
             glVertex3f(x+(float)dx2,y+(float)dy2,z);
-            glVertex3f(x+(float)dx2,y+(float)dy2,z+height);
+            glVertex3f(x+(float)dx2,y+(float)dy2,z+thickness);
         }
         glEnd();
         
@@ -289,7 +501,7 @@ public class Window3d {
         glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
         
         glBegin(GL11.GL_POLYGON);
-        for(int i=0; i<=sides; i++){
+        for(int i=0; i<sides; i++){
             double angle = Math.PI*2*i/sides;
             double dx = r*Math.cos(angle);
             double dy = r*Math.sin(angle);
@@ -298,19 +510,19 @@ public class Window3d {
         glEnd();
         
         glBegin(GL11.GL_POLYGON);
-        for(int i=0; i<=sides; i++){
+        for(int i=0; i<sides; i++){
             double angle = Math.PI*2*i/sides;
             double dx = r*Math.cos(angle);
             double dy = r*Math.sin(angle);
-            glVertex3f(x+(float)dx,y+(float)dy,z+height);
+            glVertex3f(x+(float)dx,y+(float)dy,z+thickness);
         }
         glEnd();
         glDisable(GL_POLYGON_OFFSET_LINE);
     }
 
-    void renderGrid() {
+    private void renderGrid() {
         glBegin(GL_LINES);
-        glColor3f(0.2f, 0.2f, 0.2f);
+        glColor3f(0.5f, 0.5f, 0.5f);
         for (int i = -30; i <= 30; i++) {
             glVertex3f(-30.0f, 0.0f, i);
             glVertex3f(30.0f, 0.0f, i);
@@ -373,7 +585,6 @@ public class Window3d {
             glfwWaitEvents();
         }
     }
-    
     void loop() {
         GL.createCapabilities();
         
@@ -420,13 +631,37 @@ public class Window3d {
                 mouseX = x;
                 mouseY = y;
             }
-            if (keyDown[GLFW_KEY_W]&&zoom<40){
+            if (keyDown[GLFW_KEY_S]&&zoom<40){
                 zoom+=0.1f;
                 cam.zoom(zoom);
             }
-            else if (keyDown[GLFW_KEY_S]&&zoom>-5){
+            else if (keyDown[GLFW_KEY_W]&&zoom>-5){
                 zoom-=0.1f;
                 cam.zoom(zoom);
+            }
+            else if (keyDown[GLFW_KEY_X]&&(keyDown[GLFW_KEY_UP]||keyDown[GLFW_KEY_EQUAL])){
+                lookx+=0.05f;
+            }
+            else if (keyDown[GLFW_KEY_X]&&(keyDown[GLFW_KEY_DOWN]||keyDown[GLFW_KEY_MINUS])){
+                lookx-=0.05f;
+            }
+            else if (keyDown[GLFW_KEY_Y]&&(keyDown[GLFW_KEY_UP]||keyDown[GLFW_KEY_EQUAL])){
+                looky+=0.05f;
+            }
+            else if (keyDown[GLFW_KEY_Y]&&(keyDown[GLFW_KEY_DOWN]||keyDown[GLFW_KEY_MINUS])){
+                looky-=0.05f;
+            }
+            else if (keyDown[GLFW_KEY_Z]&&(keyDown[GLFW_KEY_UP]||keyDown[GLFW_KEY_EQUAL])){
+                lookz+=0.05f;
+            }
+            else if (keyDown[GLFW_KEY_Z]&&(keyDown[GLFW_KEY_DOWN]||keyDown[GLFW_KEY_MINUS])){
+                lookz-=0.05f;
+            }
+            else if (keyDown[GLFW_KEY_ENTER]){
+                lookx = 0;
+                looky = 0;
+                lookz = 0;
+                zoom = 20;
             }
             else{
                 cam.zoom(zoom);
@@ -444,8 +679,8 @@ public class Window3d {
 
             mat.setPerspective(2*(float) Math.atan((ViewSettings.screenHeight * height / ViewSettings.screenHeightPx) / ViewSettings.distanceToScreen),
                                (float) width / height, 0.01f, 100.0f).
-                    lookAt(0.0f, 0.0f, 10.0f,
-                            0.0f, 0.0f, 0.0f,
+                    lookAt(lookx, looky, lookz+10.0f,
+                            lookx, looky, lookz,
                             0.0f, 1.0f, 0.0f)
                .get(fb);
             
@@ -460,7 +695,7 @@ public class Window3d {
             cam.viewMatrix(mat.identity()).get(fb);
             glMatrixMode(GL_MODELVIEW);
             glLoadMatrixf(fb);
-            glUniform3f(colorLocation, 0.0f, 0.0f, 0.0f);
+            glUniform3f(colorLocation, 0.3f, 0.3f, 0.3f);
             renderGrid();
 
             /* Translate to cube position and render cube */
@@ -480,7 +715,7 @@ public class Window3d {
             //render();
             renderCircleCylinder(0,0,0,1,1,20);
             glDisable(GL_POLYGON_OFFSET_LINE);*/
-            renderCircleCylinder(colorLocation,0,0,0,1,1,20);
+            render(colorLocation);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

@@ -48,7 +48,9 @@ public class Window2d {
     int height = 720;
     int fbWidth = 1280;
     int fbHeight = 720;
-
+    String title;
+    private Calculator cal;
+    
     float minX, minY;
     float maxX, maxY;
     float mouseX, mouseY;
@@ -67,7 +69,13 @@ public class Window2d {
     float maxTicks = 17.0f;
 
     DecimalFormat frmt = new DecimalFormat("0.###");
-
+    
+    public Window2d(int width, int height, String title){
+        this.width = width;
+        this.height = height;
+        this.title = title;
+    }
+    
     void run() {
         try {
             init();
@@ -100,7 +108,7 @@ public class Window2d {
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_SAMPLES, 4);
-        window = glfwCreateWindow(width, height, "Hello coordinate system!", NULL, NULL);
+        window = glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
         System.out.println("Drag with the left mouse key to move around");

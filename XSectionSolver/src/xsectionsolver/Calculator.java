@@ -395,6 +395,7 @@ public class Calculator {
 
     public String getDataString(){
         int d = 6;
+        int dcm=2;
         String data = "";
         data += "Function 1: "+Function1.getFunctionName()+"("+Function1.getParameterName(0)+") = "
                 +Function1.getFunctionExpressionString()+"\n";
@@ -403,9 +404,9 @@ public class Calculator {
         double volume = getTheoraticalVolume();
         double rVolume = getRSumVolume();
         data += "Volume: "+ RoundToString(volume,d)+"\n"
-                + "Volume(in cm³): "+ RoundToString(volume * Math.pow(actualToAlgebraRatio, 3),d)+"\n"
+                + "Volume(in cm³): "+ RoundToString(volume * Math.pow(actualToAlgebraRatio, 3),dcm)+"\n"
                 + "Riemann Sum volume: "+ RoundToString(rVolume,d)+"\n"
-                + "Riemann Sum volume(in cm³): "+ RoundToString(rVolume * Math.pow(actualToAlgebraRatio, 3),d)+"\n"
+                + "Riemann Sum volume(in cm³): "+ RoundToString(rVolume * Math.pow(actualToAlgebraRatio, 3),dcm)+"\n"
                 + "Riemann Sum type: ";
         switch(riemannSumType){
             case(Calculator.LEFT_RIEMANNSUM):
@@ -419,10 +420,10 @@ public class Calculator {
         }       
                 
         data += "Limit: "+ RoundToString(lowerLimit,d) + " to "+ RoundToString(upperLimit,d)+"\n"
-                + "Actual length(in cm): "+RoundToString(actualLength,d) + "\n"
+                + "Actual length(in cm): "+RoundToString(actualLength,dcm) + "\n"
                 + "Number of layers: "+ layersNum+"\n"
-                + "Step length: " + stepLength+"\n"
-                + "Layer's thickness(in cm): " + RoundToString(getLayerThickness(),d)+"\n"
+                + "Step length: " + RoundToString(stepLength,6)+"\n"
+                + "Layer's thickness(in cm): " + RoundToString(getLayerThickness(),dcm)+"\n"
                 + "Cross section shape: ";
         switch(xSectionType){
             case(Calculator.XSECTION_SQUARE):
@@ -446,36 +447,35 @@ public class Calculator {
             
             data += "\nLayer #"+(i+1)+ "\n";
             data += "x-position: " + RoundToString(getSliceXPos(i),d)+"\n"
-                    + "x-position(in cm): " + RoundToString(getSliceActualXPos(i),d)+"\n"
+                    + "x-position(in cm): " + RoundToString(getSliceActualXPos(i),dcm)+"\n"
                     + "y boundaries: " + RoundToString(yBoundary[1],d)+" to "+RoundToString(yBoundary[0],d)+"\n"
-                    + "y boundaries(in cm): " + RoundToString(yBoundary[1]*actualToAlgebraRatio,d)
+                    + "y boundaries(in cm): " + RoundToString(yBoundary[1]*actualToAlgebraRatio,dcm)
                     +" to "+RoundToString(yBoundary[0]*actualToAlgebraRatio,d)+"\n"
                     + "Base length: " + RoundToString(baseLength,d)+"\n"
-                    + "Base length(in cm): " + RoundToString(baseLength * actualToAlgebraRatio,d)+"\n";
+                    + "Base length(in cm): " + RoundToString(baseLength * actualToAlgebraRatio,dcm)+"\n";
             
             switch(xSectionType){
                 case(Calculator.XSECTION_CIRCLE):
                 case(Calculator.XSECTION_SEMICIRCLE):
                     data += "Radius: " + RoundToString(baseLength/2,d)+"\n";
-                    data += "Radius(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/2,d)+"\n";
+                    data += "Radius(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/2,dcm)+"\n";
                     break;
                 case(Calculator.XSECTION_EQUILIBRIUM_TRIANGLE):
                     data += "Height: " + RoundToString(baseLength*Math.sqrt(3)/2,d)+"\n";
-                    data += "Height(in cm): " + RoundToString(baseLength*Math.sqrt(3)*actualToAlgebraRatio/2,d)+"\n";
+                    data += "Height(in cm): " + RoundToString(baseLength*Math.sqrt(3)*actualToAlgebraRatio/2,dcm)+"\n";
                     break;
                 case(Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE):
                     data += "Height: " + RoundToString(baseLength/2,d)+"\n";
-                    data += "Height(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/2,d)+"\n";
+                    data += "Height(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/2,dcm)+"\n";
                     break;
                 default: break;
                                 
             }
             
             data += "Cross section area: " + RoundToString(surfaceArea(i),d)+"\n"
-                    + "Cross section area(in cm²): " + RoundToString(surfaceAreaActual(i),d)+"\n"
+                    + "Cross section area(in cm²): " + RoundToString(surfaceAreaActual(i),dcm)+"\n"
                     + "Layer volume: " + RoundToString(layerVolume(i),d)+"\n"
-                    + "Layer volume(in cm³): " + RoundToString(layerVolumeActual(i),d)+"\n"
-                    ;
+                    + "Layer volume(in cm³): " + RoundToString(layerVolumeActual(i),dcm)+"\n";
         }
         return data;
     }

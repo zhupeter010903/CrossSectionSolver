@@ -360,7 +360,7 @@ public class XSectionGUI extends javax.swing.JFrame {
 
     private void btn2DActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2DActionPerformed
 
-        new Window2d().run();
+        new Window2d(800,600,"2d model").run();
 
     }//GEN-LAST:event_btn2DActionPerformed
 
