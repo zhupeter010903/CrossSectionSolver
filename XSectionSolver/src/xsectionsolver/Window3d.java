@@ -159,11 +159,11 @@ public class Window3d {
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
                 
-                if (yoffset < 0) {
-                    zoom += 0.1f;
+                if (yoffset < 0&&zoom<60) {
+                    zoom += 0.5f;
                     cam.zoom(zoom);
-                } else if(yoffset > 0){
-                    zoom -= 0.1f;
+                } else if(yoffset > 0&&zoom>-5){
+                    zoom -= 0.5f;
                     cam.zoom(zoom);
                 }
                 else{
@@ -641,7 +641,7 @@ public class Window3d {
                 mouseX = x;
                 mouseY = y;
             }
-            if (keyDown[GLFW_KEY_S]&&zoom<40){
+            if (keyDown[GLFW_KEY_S]&&zoom<60){
                 zoom+=0.1f;
                 cam.zoom(zoom);
             }
@@ -691,7 +691,7 @@ public class Window3d {
 
             mat.setPerspective(2*(float) Math.atan((ViewSettings.screenHeight * height / ViewSettings.screenHeightPx) / ViewSettings.distanceToScreen),
                                (float) width / height, 0.01f, 100.0f).
-                    lookAt(lookx, looky, lookz+10.0f,
+                    lookAt(lookx, looky, lookz+5.0f,
                             lookx, looky, lookz,
                             0.0f, 1.0f, 0.0f)
                .get(fb);

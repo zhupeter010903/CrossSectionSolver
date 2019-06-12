@@ -18,6 +18,13 @@ public class XSectionGUI extends javax.swing.JFrame {
         initComponents();
         initiate();
     }
+    
+    private void constructCalculator(){
+        c = new Calculator(txtF.getText(), txtG.getText(), cbBoxXSectionType.getSelectedIndex(),
+                           Integer.parseInt(txtLayersNum.getText()), txtLowerLim.getText(), txtUpperLim.getText(),
+                           Double.parseDouble(txtActualLength.getText()), cbBoxRSumType.getSelectedIndex());
+        
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -371,24 +378,21 @@ public class XSectionGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnCalcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcActionPerformed
-
-        c = new Calculator(txtF.getText(), txtG.getText(), cbBoxXSectionType.getSelectedIndex(),
-                           Integer.parseInt(txtLayersNum.getText()), txtLowerLim.getText(), txtUpperLim.getText(),
-                           Double.parseDouble(txtActualLength.getText()), cbBoxRSumType.getSelectedIndex());
+        constructCalculator();
         
         txtOutput.setText(c.getDataString());
 
     }//GEN-LAST:event_btnCalcActionPerformed
 
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
-
+        constructCalculator();
         model2d = new Window2d(800, 600, "2D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
         model2d.run();
 
     }//GEN-LAST:event_btn2dActionPerformed
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
-
+        constructCalculator();
         model3d = new Window3d(800, 600, "3D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
         model3d.run();
 
