@@ -43,32 +43,35 @@ public class Window2d {
     GLFWMouseButtonCallback mbCallback;
     GLFWScrollCallback sCallback;
 
-    long window;
-    int width = 1280;
-    int height = 720;
-    int fbWidth = 1280;
-    int fbHeight = 720;
-    String title;
+    private long window;
+    private int width = 1280;
+    private int height = 720;
+    private int fbWidth = 1280;
+    private int fbHeight = 720;
+    private String title;
     private Calculator cal;
     
-    float minX, minY;
-    float maxX, maxY;
-    float mouseX, mouseY;
-    int[] viewport = new int[4];
-    boolean translate;
-    boolean rotate;
-    OrthoCameraControl cam = new OrthoCameraControl(4);
-    Matrix3x2f tmp = new Matrix3x2f();
-    FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-    Vector4f rect = new Vector4f();
-    Vector3f v = new Vector3f();
-    Vector3f v2 = new Vector3f();
-    Vector2f p = new Vector2f();
-    ByteBuffer charBuffer = BufferUtils.createByteBuffer(32 * 270);
-    float textScale = 3.1f;
-    float maxTicks = 17.0f;
+    private float minX, minY;
+    private float maxX, maxY;
+    private float mouseX, mouseY;
+    private int[] viewport = new int[4];
+    private boolean translate;
+    private boolean rotate;
+    private OrthoCameraControl cam = new OrthoCameraControl(4);
+    private Matrix3x2f tmp = new Matrix3x2f();
+    private FloatBuffer fb = BufferUtils.createFloatBuffer(16);
+    private Vector4f rect = new Vector4f();
+    private Vector3f v = new Vector3f();
+    private Vector3f v2 = new Vector3f();
+    private Vector2f p = new Vector2f();
+    private ByteBuffer charBuffer = BufferUtils.createByteBuffer(32 * 270);
+    private float textScale = 3.1f;
+    private float maxTicks = 17.0f;
+    
+    private int stepNum = 1000;
+    private double[][] functionPoints;
 
-    DecimalFormat frmt = new DecimalFormat("0.###");
+    private DecimalFormat frmt = new DecimalFormat("0.###");
     
     public Window2d(int width, int height, String title){
         this.width = width;
@@ -79,6 +82,21 @@ public class Window2d {
     public Window2d(int width, int height, String title,Calculator cal){
         this(width, height, title);
         this.cal = cal;
+        functionPoints = new double[stepNum+1][3];
+        
+        double upperLimit=cal.getUpperLimit();
+        double lowerLimit=cal.getLowerLimit();
+        
+        double step=(upperLimit-lowerLimit)/1000;
+        for(int i = 0; i<=stepNum;i++){
+            double x = lowerLimit+i*step;
+            double y1 = cal.getFunction1().calculate(new Argument("x="+x));
+            double y2 = cal.getFunction2().calculate(new Argument("x="+x));
+            functionPoints[i][0] = x;
+            functionPoints[i][1] = y1;
+            functionPoints[i][2] = y2;
+            
+        }
     }
     
     public void run() {
@@ -93,9 +111,13 @@ public class Window2d {
             mbCallback.free();
             sCallback.free();
         } finally {
-            glfwTerminate();
+            stop();
             errorCallback.free();
         }
+    }
+    
+    public void stop(){
+        glfwTerminate();
     }
 
     private void toWorld(float x, float y) {
@@ -116,9 +138,9 @@ public class Window2d {
         window = glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
-        System.out.println("Drag with the left mouse key to move around");
-        System.out.println("Drag with the right mouse key to rotate");
-        System.out.println("Use the mouse wheel to zoom in/out");
+        //System.out.println("Drag with the left mouse key to move around");
+        //System.out.println("Drag with the right mouse key to rotate");
+        //System.out.println("Use the mouse wheel to zoom in/out");
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
@@ -285,7 +307,7 @@ public class Window2d {
         glLineWidth(1.0f);
 
         // unit square
-        glColor3f(0.2f, 0.4f, 0.6f);
+        /*glColor3f(0.2f, 0.4f, 0.6f);
         glLineWidth(1.9f);
         glBegin(GL_LINES);
         for (int i = -1; i <= +1; i++) {
@@ -297,7 +319,7 @@ public class Window2d {
             glVertex2f(+1, i);
         }
         glEnd();
-        glLineWidth(1.0f);
+        glLineWidth(1.0f);*/
     }
 
     private boolean snapX(float edge, float x2, float y2, float x3, float y3) {
@@ -445,42 +467,35 @@ public class Window2d {
     }
     
     private void drawFunction(){
-        float upperLimit=(float)cal.getUpperLimit();
-        float lowerLimit=(float)cal.getLowerLimit();
+        //float upperLimit=(float)cal.getUpperLimit();
+        //float lowerLimit=(float)cal.getLowerLimit();
         
         glBegin(GL11.GL_LINE_STRIP);
         glLineWidth(2.5f);
         glColor3f(0.0f,0.0f,0.0f);
-        double step=(upperLimit-lowerLimit)/1000;
-        for(double j=lowerLimit;j<upperLimit;j+=step){
-            double y=1;
-            if(y==Double.NaN){
+        for(int i=0;i<=stepNum;i++){
+            if(functionPoints[i][1]==Double.NaN){
                 glEnd();
                 glBegin(GL11.GL_LINE_STRIP);
             }
             else{
-                glVertex2f((float)j, (float)y);
+                glVertex2f((float)functionPoints[i][0], (float)functionPoints[i][1]);
             }
             //glVertex2f((float)(j+step), (float)y);
         }
         glEnd();
         glLineWidth(1.0f);
         
-        PieceWiseFunction f2 = new PieceWiseFunction("f","arcsec(x),-4,-1,arccos(x),-1,1,arcsec(x),1,4","x");
-        
-        
         glBegin(GL11.GL_LINE_STRIP);
         glLineWidth(2.5f);
         glColor3f(0.0f,0.0f,0.0f);
-        for(double j=lowerLimit;j<upperLimit;j+=step){
-            Argument x = new Argument("x",j);
-            double y=f2.calculate(x);
-            if(y==Double.NaN){
+        for(int i=0;i<=stepNum;i++){
+            if(functionPoints[i][2]==Double.NaN){
                 glEnd();
                 glBegin(GL11.GL_LINE_STRIP);
             }
             else{
-                glVertex2f((float)j, (float)y);
+                glVertex2f((float)functionPoints[i][0], (float)functionPoints[i][2]);
             }
             //glVertex2f((float)(j+step), (float)y);
         }
