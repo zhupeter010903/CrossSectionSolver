@@ -65,7 +65,7 @@ public class Window3d {
             float y = (float)(cal.getYBoundaryActual(i)[0]+cal.getYBoundaryActual(i)[1])/2.f;
             graphData[i][0] = y;
             graphData[i][1] = 0;
-            graphData[i][2] = (float)cal.getSliceActualXPos(i);
+            graphData[i][2] = (float)(cal.getSliceActualXPos(i)-cal.getActualLength()/2);
             graphData[i][3] = (float)cal.getBaseLengthActual(i)/2.f;
             graphData[i][4] = (float)cal.getLayerThickness();
         }
@@ -135,7 +135,7 @@ public class Window3d {
         glfwSetCursorPosCallback(window, cpCallback = new GLFWCursorPosCallback() {
             @Override
             public void invoke(long window, double xpos, double ypos) {
-                x = (int) xpos - width / 2;
+                x = (int) xpos- width / 2;
                 y = height / 2 - (int) ypos;
             }
         });
@@ -155,12 +155,17 @@ public class Window3d {
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
                 
-                /*if (yoffset < 0) {
-                    zoom *= 1.1f;
-                } else {
-                    zoom /= 1.0f/1.1f;
+                if (yoffset < 0) {
+                    zoom += 0.1f;
+                    cam.zoom(zoom);
+                } else if(yoffset > 0){
+                    zoom -= 0.1f;
+                    cam.zoom(zoom);
                 }
-                cam.zoom(zoom);*/
+                else{
+                    cam.zoom(zoom);
+                }
+                
             }
         });
 
@@ -585,6 +590,7 @@ public class Window3d {
             glfwWaitEvents();
         }
     }
+    
     private void loop() {
         GL.createCapabilities();
         
@@ -662,6 +668,8 @@ public class Window3d {
                 looky = 0;
                 lookz = 0;
                 zoom = 20;
+                cam.setAlpha((float) Math.toRadians(-20));
+                cam.setBeta((float) Math.toRadians(20));
             }
             else{
                 cam.zoom(zoom);

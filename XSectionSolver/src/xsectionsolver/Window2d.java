@@ -445,20 +445,15 @@ public class Window2d {
     }
     
     private void drawFunction(){
-        //Function f = new Function("f(x)=arcsin(x)-pi/4");
-        PieceWiseFunction f = new PieceWiseFunction("f","arccsc(x),-4,-1,arcsin(x),-1,1,arccsc(x),1,4","x");
-        float upperLimit=4;
-        float lowerLimit=-4;
+        float upperLimit=(float)cal.getUpperLimit();
+        float lowerLimit=(float)cal.getLowerLimit();
         
         glBegin(GL11.GL_LINE_STRIP);
         glLineWidth(2.5f);
         glColor3f(0.0f,0.0f,0.0f);
         double step=(upperLimit-lowerLimit)/1000;
         for(double j=lowerLimit;j<upperLimit;j+=step){
-            Argument x = new Argument("x",j);
-            Expression e = new Expression(f.getFunctionExpressionString(),x);
-            e.setSilentMode();
-            double y=f.calculate(x);
+            double y=1;
             if(y==Double.NaN){
                 glEnd();
                 glBegin(GL11.GL_LINE_STRIP);
