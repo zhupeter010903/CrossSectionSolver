@@ -111,9 +111,13 @@ public class Window2d {
             mbCallback.free();
             sCallback.free();
         } finally {
-            glfwTerminate();
+            stop();
             errorCallback.free();
         }
+    }
+    
+    public void stop(){
+        glfwTerminate();
     }
 
     private void toWorld(float x, float y) {
@@ -134,9 +138,9 @@ public class Window2d {
         window = glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
-        System.out.println("Drag with the left mouse key to move around");
-        System.out.println("Drag with the right mouse key to rotate");
-        System.out.println("Use the mouse wheel to zoom in/out");
+        //System.out.println("Drag with the left mouse key to move around");
+        //System.out.println("Drag with the right mouse key to rotate");
+        //System.out.println("Use the mouse wheel to zoom in/out");
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)

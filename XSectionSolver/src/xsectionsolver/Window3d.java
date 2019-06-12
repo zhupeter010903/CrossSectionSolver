@@ -50,6 +50,8 @@ public class Window3d {
     private Calculator cal;
     private float[][] graphData;
     
+    ArcBallCamera cam = new ArcBallCamera();
+    
     public Window3d(int width, int height, String title){
         this.width = width;
         this.height = height;
@@ -85,13 +87,15 @@ public class Window3d {
             sCallback.free();
             mbCallback.free();
         } finally {
-            glfwTerminate();
+            stop();
             errorCallback.free();
         }
         
     }
-
-    ArcBallCamera cam = new ArcBallCamera();
+    
+    public void stop(){
+        glfwTerminate();
+    }
 
     private void init() {
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
