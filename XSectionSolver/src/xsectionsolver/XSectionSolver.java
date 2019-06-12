@@ -29,9 +29,9 @@ public class XSectionSolver {
         System.out.println(cal.calculateTheoraticalVolume());*/
         
         
-        Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
-                ,"arccsc(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4"
-                ,Calculator.XSECTION_CIRCLE,80,"-4","4",20,0);
+        //Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
+                //,"arccsc(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4"
+                //,Calculator.XSECTION_CIRCLE,80,"-4","4",20,0);
         //System.out.println(cal2.getDataString());
         /*for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
             System.out.println(i+": "+cal2.getPieceWiseLimits().get(i).getArgumentValue());
@@ -39,25 +39,25 @@ public class XSectionSolver {
         //mXparser.consolePrintln(f3.getFunctionExpressionString()+","+e.getExpressionString() + " = " + e.calculate());
         
         //Mark
-        Calculator cal3 = new Calculator("(cos((4/pi)*x))^4","((2*x/pi)*e^(0.2*x))-x/(pi^2-x^2)"
-                ,Calculator.XSECTION_EQUILIBRIUM_TRIANGLE,40,"-2.9","2.9",20,0);
+        //Calculator cal3 = new Calculator("(cos((4/pi)*x))^4","((2*x/pi)*e^(0.2*x))-x/(pi^2-x^2)"
+                //,Calculator.XSECTION_EQUILIBRIUM_TRIANGLE,40,"-2.9","2.9",20,0);
         //System.out.println(cal3.getDataString());
         
         //Cici
-        Calculator cal4 = new Calculator("-3*abs(sin(x/2))","-abs(x)+2*pi"
-                ,Calculator.XSECTION_SEMICIRCLE,50,"-2*pi","2*pi",20,0);
+        //Calculator cal4 = new Calculator("-3*abs(sin(x/2))","-abs(x)+2*pi"
+                //,Calculator.XSECTION_SEMICIRCLE,50,"-2*pi","2*pi",20,0);
         //System.out.println(cal4.getDataString());
         
         
         //Alec
-        Calculator cal5 = new Calculator("sqrt((x^2)*(pi-x))","sin(x)"
-                ,Calculator.XSECTION_SEMICIRCLE,53,"0","pi",24,0);
+        //Calculator cal5 = new Calculator("sqrt((x^2)*(pi-x))","sin(x)"
+                //,Calculator.XSECTION_SEMICIRCLE,53,"0","pi",24,0);
         //System.out.println(cal5.getDataString());
         
         
-        Window3d threeD= new Window3d(800,600,"3d model",cal2);
-        threeD.run();
-        //new XSectionGUI().run();
+       // Window3d threeD= new Window3d(800,600,"3d model",cal2);
+        //threeD.run();
+        new XSectionGUI().run();
         //new XSectionGUI().setVisible(true);
     }
     /**
