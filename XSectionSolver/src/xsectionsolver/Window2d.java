@@ -34,7 +34,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.mariuszgromada.math.mxparser.*;
 
-public class Window2d {
+public class Window2d implements Runnable{
     GLFWErrorCallback errorCallback;
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;

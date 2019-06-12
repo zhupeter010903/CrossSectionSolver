@@ -12,6 +12,7 @@ public class XSectionGUI extends javax.swing.JFrame {
     private String welcomeGuide;
     private Window3d model3d;
     private Window2d model2d;
+    Thread t2d = new Thread(model2d);
     private Calculator c;
 
     public XSectionGUI() {
@@ -385,16 +386,23 @@ public class XSectionGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCalcActionPerformed
 
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
+        
+        //btn2d.setEnabled(false);
         constructCalculator();
         model2d = new Window2d(800, 600, "2D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
-        model2d.run();
+        Thread t = new Thread(model2d);
+        //model2d.run();
+        //t2d = new Thread(model2d);
+        t.start();
 
     }//GEN-LAST:event_btn2dActionPerformed
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
         constructCalculator();
         model3d = new Window3d(800, 600, "3D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
-        model3d.run();
+        Thread t = new Thread(model3d);
+        //model3d.run();
+        t.start();
 
     }//GEN-LAST:event_btn3dActionPerformed
 
