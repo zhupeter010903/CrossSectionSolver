@@ -76,7 +76,12 @@ public class Window2d {
         this.title = title;
     }
     
-    void run() {
+    public Window2d(int width, int height, String title,Calculator cal){
+        this(width, height, title);
+        this.cal = cal;
+    }
+    
+    public void run() {
         try {
             init();
             loop();
@@ -93,13 +98,13 @@ public class Window2d {
         }
     }
 
-    void toWorld(float x, float y) {
+    private void toWorld(float x, float y) {
         float nx = (float) x / width * 2.0f - 1.0f;
         float ny = (float) (height - y) / height * 2.0f - 1.0f;
         cam.invviewproj().transformPosition(v.set(nx, ny, 0));
     }
 
-    void init() {
+    private void init() {
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -172,7 +177,7 @@ public class Window2d {
         cam.setSize(width, height);
     }
 
-    float stippleOffsetY(int width) {
+    private float stippleOffsetY(int width) {
         cam.invviewproj().unprojectInv(0, 0, 0, viewport, v);
         float x0 = v.x, y0 = v.y;
         cam.invviewproj().unprojectInv(0, width, 0, viewport, v);
@@ -181,7 +186,7 @@ public class Window2d {
         return y0 % len - len * 0.25f;
     }
 
-    float stippleOffsetX(int width) {
+    private float stippleOffsetX(int width) {
         cam.invviewproj().unprojectInv(0, 0, 0, viewport, v);
         float x0 = v.x, y0 = v.y;
         cam.invviewproj().unprojectInv(width, 0, 0, viewport, v);
@@ -190,11 +195,11 @@ public class Window2d {
         return x0 % len - len * 0.25f;
     }
 
-    float tick(float range, float subs) {
+    private float tick(float range, float subs) {
         return tick(range, subs, false);
     }
 
-    float tick(float range, float subs, boolean sub) {
+    private float tick(float range, float subs, boolean sub) {
         float tempStep = range / subs;
         float mag = (float) Math.floor(Math.log10(tempStep));
         float magPow = (float) Math.pow(10.0, mag);
@@ -210,7 +215,7 @@ public class Window2d {
         return magMsd * magPow;
     }
 
-    float diagonal() {
+    private float diagonal() {
         cam.invviewproj().transformPosition(v.set(-1, -1, 0));
         float x = v.x, y = v.y;
         cam.invviewproj().transformPosition(v.set(+1, +1, 0));
@@ -218,7 +223,7 @@ public class Window2d {
         return (float) Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
     }
 
-    float px(int px) {
+    private float px(int px) {
         cam.invviewproj().unprojectInv(0, 0, 0, viewport, v);
         float x0 = v.x, y0 = v.y;
         cam.invviewproj().unprojectInv(px, 0, 0, viewport, v);
@@ -226,7 +231,7 @@ public class Window2d {
         return (float) Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
     }
 
-    void renderGrid() {
+    private void renderGrid() {
         Vector2f min = new Vector2f();
         Vector2f v0 = new Vector2f();
         Vector2f v1 = new Vector2f();
@@ -295,7 +300,7 @@ public class Window2d {
         glLineWidth(1.0f);
     }
 
-    boolean snapX(float edge, float x2, float y2, float x3, float y3) {
+    private boolean snapX(float edge, float x2, float y2, float x3, float y3) {
         cam.invviewproj().transformPosition(v2.set(edge, +1, 0));
         float x0 = v2.x, y0 = v2.y;
         cam.invviewproj().transformPosition(v2.set(edge, -1, 0));
@@ -307,7 +312,7 @@ public class Window2d {
         return false;
     }
 
-    boolean snapY(float edge, float x2, float y2, float x3, float y3) {
+    private boolean snapY(float edge, float x2, float y2, float x3, float y3) {
         cam.invviewproj().transformPosition(v2.set(-1, edge, 0));
         float x0 = v2.x, y0 = v2.y;
         cam.invviewproj().transformPosition(v2.set(+1, edge, 0));
@@ -319,15 +324,15 @@ public class Window2d {
         return false;
     }
 
-    float textWidth(String text) {
+    private float textWidth(String text) {
         return stb_easy_font_width(text) * textScale / width;
     }
 
-    float textHeight(String text) {
+    private float textHeight(String text) {
         return stb_easy_font_height(text) * textScale / height;
     }
 
-    void renderTickLabels() {
+    private void renderTickLabels() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_FLOAT, 16, charBuffer);
         glMatrixMode(GL_MODELVIEW);
@@ -414,7 +419,7 @@ public class Window2d {
         glPopMatrix();
     }
 
-    void renderMouseCursorCoordinates() {
+    private void renderMouseCursorCoordinates() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_FLOAT, 16, charBuffer);
         glMatrixMode(GL_MODELVIEW);
@@ -439,7 +444,7 @@ public class Window2d {
         glPopMatrix();
     }
     
-    void drawFunction(){
+    private void drawFunction(){
         //Function f = new Function("f(x)=arcsin(x)-pi/4");
         PieceWiseFunction f = new PieceWiseFunction("f","arccsc(x),-4,-1,arcsin(x),-1,1,arccsc(x),1,4","x");
         float upperLimit=4;
@@ -496,7 +501,7 @@ public class Window2d {
         maxY = rect.w;
     }
 
-    void loop() {
+    private void loop() {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);

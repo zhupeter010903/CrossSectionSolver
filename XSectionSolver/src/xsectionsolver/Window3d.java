@@ -71,7 +71,7 @@ public class Window3d {
         }
     }
 
-    void run() {
+    public void run() {
         try {
             init();
             if(isUpdating()){
@@ -93,7 +93,7 @@ public class Window3d {
 
     ArcBallCamera cam = new ArcBallCamera();
 
-    void init() {
+    private void init() {
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -177,7 +177,7 @@ public class Window3d {
         glfwShowWindow(window);
     }
 
-    void renderCube() {
+    private void renderCube() {
         glBegin(GL_QUADS);
         //glColor3f(   0.0f,  0.0f,  0.2f );
         glVertex3f(  0.5f, -0.5f, -0.5f );
@@ -212,7 +212,7 @@ public class Window3d {
         glEnd();
     }
     
-    void drawSphere(double r, int lats, int longs) {
+    private void drawSphere(double r, int lats, int longs) {
         int i, j;
         for(i = 0; i <= lats; i++) {
             double lat0 = Math.PI * (-0.5 + (double) (i - 1) / lats);
@@ -239,7 +239,7 @@ public class Window3d {
         }
     }
     
-    void render(int colorLocation){
+    private void render(int colorLocation){
         int crossSectionType = cal.getxSectionType();
         switch(crossSectionType){
             case(Calculator.XSECTION_SQUARE):
@@ -585,7 +585,7 @@ public class Window3d {
             glfwWaitEvents();
         }
     }
-    void loop() {
+    private void loop() {
         GL.createCapabilities();
         
         // Set the clear color
