@@ -382,7 +382,10 @@ public class XSectionGUI extends javax.swing.JFrame {
         constructCalculator();
         
         txtOutput.setText(c.getDataString());
-
+        txtOutput.setCaretPosition(0);
+        //txtOutput.setSelectionStart(0);
+        //txtOutput.setSelectionEnd(0); 
+        //jScrollPane1.getVerticalScrollBar().setValue(jScrollPane1.getVerticalScrollBar().getMaximum());
     }//GEN-LAST:event_btnCalcActionPerformed
 
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
