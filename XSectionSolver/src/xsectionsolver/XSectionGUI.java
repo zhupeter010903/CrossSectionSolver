@@ -6,14 +6,21 @@ import org.mariuszgromada.math.mxparser.mathcollection.*;
 import org.mariuszgromada.math.mxparser.parsertokens.*;
 import org.mariuszgromada.math.mxparser.regressiontesting.*;
 import org.mariuszgromada.math.mxparser.syntaxchecker.*;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 public class XSectionGUI extends javax.swing.JFrame {
     
     private String welcomeGuide;
-    private Window3d model3d;
-    private Window2d model2d;
-    Thread t2d = new Thread(model2d);
     private Calculator c;
+    private Thread t3d;
+    private Thread t2d;
 
     public XSectionGUI() {
         initComponents();
@@ -221,6 +228,11 @@ public class XSectionGUI extends javax.swing.JFrame {
         btn3d.setMaximumSize(new java.awt.Dimension(360, 40));
         btn3d.setMinimumSize(new java.awt.Dimension(360, 40));
         btn3d.setPreferredSize(new java.awt.Dimension(360, 40));
+        btn3d.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn3dMouseClicked(evt);
+            }
+        });
         btn3d.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn3dActionPerformed(evt);
@@ -377,46 +389,55 @@ public class XSectionGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-
+        
         System.exit(0);
 
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnCalcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcActionPerformed
+        
         constructCalculator();
         
         txtOutput.setText(c.getDataString());
         txtOutput.setCaretPosition(0);
-        //txtOutput.setSelectionStart(0);
-        //txtOutput.setSelectionEnd(0); 
-        //jScrollPane1.getVerticalScrollBar().setValue(jScrollPane1.getVerticalScrollBar().getMaximum());
+        
+        btn2d.setEnabled(true);
+        btn3d.setEnabled(true);
+        btnCalc.setEnabled(false);
+
     }//GEN-LAST:event_btnCalcActionPerformed
     
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
-        
-        //btn2d.setEnabled(false);
+
         constructCalculator();
-        model2d = new Window2d(800, 600, "2D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
-        Thread t = new Thread(model2d);
-        //model2d.run();
-        //t2d = new Thread(model2d);
-        t.start();
+        Window2d model2d = new Window2d(800, 600, "2D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
+        t2d = new Thread(model2d);
+
+        t2d.start();
 
     }//GEN-LAST:event_btn2dActionPerformed
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
+        
         constructCalculator();
-        model3d = new Window3d(800, 600, "3D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
-        Thread t = new Thread(model3d);
-        //model3d.run();
-        t.start();
+        Window3d model3d = new Window3d(800, 600, "3D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
+        t3d = new Thread(model3d);
+
+        t3d.start();
 
     }//GEN-LAST:event_btn3dActionPerformed
 
     private void btn2dMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn2dMouseClicked
-        // TODO add your handling code here:
+
+        btn2d.setEnabled(false);
         
     }//GEN-LAST:event_btn2dMouseClicked
+
+    private void btn3dMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn3dMouseClicked
+
+        btn3d.setEnabled(false);
+
+    }//GEN-LAST:event_btn3dMouseClicked
 
     private void initiate() {
 
@@ -433,6 +454,10 @@ public class XSectionGUI extends javax.swing.JFrame {
         txtActualLength.setText("" + Calculator.MIN_ACTUAL_LENGTH);
         cbBoxXSectionType.setSelectedIndex(2);
         cbBoxRSumType.setSelectedIndex(0);
+        
+        btn2d.setEnabled(false);
+        btn3d.setEnabled(false);
+        btnCalc.setEnabled(true);
         
     }
     

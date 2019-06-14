@@ -104,20 +104,21 @@ public class Window2d implements Runnable{
             init();
             loop();
             glfwDestroyWindow(window);
-            keyCallback.free();
+            /*keyCallback.free();
             fbCallback.free();
             wsCallback.free();
             cpCallback.free();
             mbCallback.free();
-            sCallback.free();
+            sCallback.free();*/
         } finally {
-            stop();
-            errorCallback.free();
+            //stop();
+            //errorCallback.free();
         }
     }
     
     public void stop(){
-        glfwTerminate();
+        //glfwTerminate();
+        glfwDestroyWindow(window);
     }
 
     private void toWorld(float x, float y) {

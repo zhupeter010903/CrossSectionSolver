@@ -81,20 +81,21 @@ public class Window3d implements Runnable{
                 //threadLoop();
             }
             glfwDestroyWindow(window);
-            keyCallback.free();
+            /*keyCallback.free();
             fbCallback.free();
             cpCallback.free();
             sCallback.free();
-            mbCallback.free();
+            mbCallback.free();*/
         } finally {
-            stop();
-            errorCallback.free();
+            //stop();
+            //errorCallback.free();
         }
         
     }
     
     public void stop(){
-        glfwTerminate();
+        //glfwTerminate();
+        glfwDestroyWindow(window);
     }
 
     private void init() {
