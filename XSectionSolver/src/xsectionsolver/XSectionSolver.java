@@ -62,7 +62,7 @@ public class XSectionSolver {
         }
         Window3d threeD= new Window3d(800,600,"3d model",cal3);
         threeD.run();*/
-        new XSectionGUI().run();
+        //new XSectionGUI().run();
         //new XSectionGUI().setVisible(true);
     }
     /**
