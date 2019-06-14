@@ -21,10 +21,9 @@ public class XSectionGUI extends javax.swing.JFrame {
     }
     
     private void constructCalculator(){
-        c = new Calculator(txtF.getText(), txtG.getText(), cbBoxXSectionType.getSelectedIndex(),
+        c = new Calculator(functionInputAdjust(txtF.getText()), functionInputAdjust(txtG.getText()), cbBoxXSectionType.getSelectedIndex(),
                            Integer.parseInt(txtLayersNum.getText()), txtLowerLim.getText(), txtUpperLim.getText(),
                            Double.parseDouble(txtActualLength.getText()), cbBoxRSumType.getSelectedIndex());
-        
     }
 
     @SuppressWarnings("unchecked")
@@ -233,6 +232,11 @@ public class XSectionGUI extends javax.swing.JFrame {
         btn2d.setMaximumSize(new java.awt.Dimension(360, 40));
         btn2d.setMinimumSize(new java.awt.Dimension(360, 40));
         btn2d.setPreferredSize(new java.awt.Dimension(360, 40));
+        btn2d.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn2dMouseClicked(evt);
+            }
+        });
         btn2d.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn2dActionPerformed(evt);
@@ -387,7 +391,7 @@ public class XSectionGUI extends javax.swing.JFrame {
         //txtOutput.setSelectionEnd(0); 
         //jScrollPane1.getVerticalScrollBar().setValue(jScrollPane1.getVerticalScrollBar().getMaximum());
     }//GEN-LAST:event_btnCalcActionPerformed
-
+    
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
         
         //btn2d.setEnabled(false);
@@ -409,6 +413,11 @@ public class XSectionGUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btn3dActionPerformed
 
+    private void btn2dMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn2dMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_btn2dMouseClicked
+
     private void initiate() {
 
         welcomeGuide = "Welcome to Volume by Cross Section Solver!"
@@ -427,8 +436,27 @@ public class XSectionGUI extends javax.swing.JFrame {
         
     }
     
+    public String functionInputAdjust(String function){
+        String f;
+        f = function.replace(" ", "");
+        if(f.contains("(")){
+            for(int i=1;i<f.length()-1;i++){
+                if(f.charAt(i)==')'&&f.charAt(i+1)=='('){
+                    f = f.subSequence(0, i+1)+"*"+f.subSequence(i+1, f.length());
+                    i++;
+                }
+                else if(f.charAt(i+1)=='x' && f.charAt(i)>=48 && f.charAt(i)<=57){
+                    f = f.subSequence(0, i+1)+"*"+f.subSequence(i+1, f.length());
+                    i++;
+                }
+            }
+        }
+
+        return f;
+    }
+    
     public void run(){
-        System.out.println("run");
+        //System.out.println("run");
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -450,7 +478,7 @@ public class XSectionGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                System.out.println("run2");
+                //System.out.println("run2");
                 new XSectionGUI().setVisible(true);
             }
         });
