@@ -467,13 +467,24 @@ public class Window2d implements Runnable{
         glPopMatrix();
     }
     
-    private void drawFunction(){
-        //float upperLimit=(float)cal.getUpperLimit();
-        //float lowerLimit=(float)cal.getLowerLimit();
-        
+    private void renderFunctionArea(){
+        glBegin(GL11.GL_QUAD_STRIP);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glColor4f(0.0f,191.f/255.f,1.0f,0.1f);
+        for(int i=0;i<=stepNum;i++){
+            glVertex2f((float)functionPoints[i][0], (float)functionPoints[i][1]);
+            glVertex2f((float)functionPoints[i][0], (float)functionPoints[i][2]);
+        }
+        glEnd();
+        glDisable(GL_BLEND);
+        glLineWidth(1.0f);
+    }
+    
+    private void renderFunction(){
+        glLineWidth(5.0f);
         glBegin(GL11.GL_LINE_STRIP);
-        glLineWidth(2.5f);
-        glColor3f(0.0f,0.0f,0.0f);
+        glColor3f(0.9f,0.0f,0.0f);
         for(int i=0;i<=stepNum;i++){
             if(functionPoints[i][1]==Double.NaN){
                 glEnd();
@@ -485,11 +496,9 @@ public class Window2d implements Runnable{
             //glVertex2f((float)(j+step), (float)y);
         }
         glEnd();
-        glLineWidth(1.0f);
         
         glBegin(GL11.GL_LINE_STRIP);
-        glLineWidth(2.5f);
-        glColor3f(0.0f,0.0f,0.0f);
+        glColor3f(0.0f,0.0f,0.9f);
         for(int i=0;i<=stepNum;i++){
             if(functionPoints[i][2]==Double.NaN){
                 glEnd();
@@ -502,6 +511,8 @@ public class Window2d implements Runnable{
         }
         glEnd();
         glLineWidth(1.0f);
+        
+        
     }
 
     private void computeVisibleExtents() {
@@ -524,9 +535,11 @@ public class Window2d implements Runnable{
             computeVisibleExtents();
             glMatrixMode(GL_PROJECTION);
             glLoadMatrixf(cam.viewproj().get(fb));
+            renderFunctionArea();
             renderGrid();
             renderTickLabels();
-            drawFunction();
+            renderFunction();
+            
             //renderMouseCursorCoordinates();
             glfwSwapBuffers(window);
         }

@@ -16,6 +16,13 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 public class XSectionGUI extends javax.swing.JFrame {
+    GLFWErrorCallback errorCallback;
+    GLFWKeyCallback keyCallback;
+    GLFWFramebufferSizeCallback fbCallback;
+    GLFWWindowSizeCallback wsCallback;
+    GLFWCursorPosCallback cpCallback;
+    GLFWMouseButtonCallback mbCallback;
+    GLFWScrollCallback sCallback;
     
     private String welcomeGuide;
     private Calculator c;
@@ -389,7 +396,13 @@ public class XSectionGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        
+        keyCallback.free();
+        fbCallback.free();
+        wsCallback.free();
+        cpCallback.free();
+        mbCallback.free();
+        sCallback.free();
+        errorCallback.free();
         System.exit(0);
 
     }//GEN-LAST:event_btnExitActionPerformed
