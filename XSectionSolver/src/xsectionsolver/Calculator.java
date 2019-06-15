@@ -450,7 +450,7 @@ public class Calculator {
                     + "x-position(in cm): " + RoundToString(getSliceActualXPos(i),dcm)+"\n"
                     + "y boundaries: " + RoundToString(yBoundary[1],d)+" to "+RoundToString(yBoundary[0],d)+"\n"
                     + "y boundaries(in cm): " + RoundToString(yBoundary[1]*actualToAlgebraRatio,dcm)
-                    +" to "+RoundToString(yBoundary[0]*actualToAlgebraRatio,d)+"\n"
+                    +" to "+RoundToString(yBoundary[0]*actualToAlgebraRatio,dcm)+"\n"
                     + "Base length: " + RoundToString(baseLength,d)+"\n"
                     + "Base length(in cm): " + RoundToString(baseLength * actualToAlgebraRatio,dcm)+"\n";
             
