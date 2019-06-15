@@ -467,6 +467,8 @@ public class Calculator {
                 case(Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE):
                     data += "Height: " + RoundToString(baseLength/2,d)+"\n";
                     data += "Height(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/2,dcm)+"\n";
+                    data += "Leg: " + RoundToString(baseLength/Math.sqrt(2),d)+"\n";
+                    data += "Leg(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/Math.sqrt(2),dcm)+"\n";
                     break;
                 default: break;
                                 
