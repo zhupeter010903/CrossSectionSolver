@@ -46,7 +46,7 @@ public class Calculator {
     
     private ArrayList<Argument> pieceWiseLimits = new ArrayList();
     
-    public static DecimalFormat df = new DecimalFormat("0.######");
+    public static DecimalFormat df;
     
     public Calculator(String Function1Expression, String Function2Expression, int xSectionType, int layersNum, 
             String lowerLimit, String upperLimit, double actualLength, int riemannSumType) {
@@ -214,7 +214,25 @@ public class Calculator {
     }
     
     public static String RoundToString(double d, int decimalPlace){
-        return df.format(Round(d,decimalPlace));
+        String dfFormat = "0";
+        double rd = Round(d,decimalPlace);
+        if(decimalPlace>0){
+            dfFormat+=".";
+        }
+        if(Math.abs(rd-d)<Math.pow(10, -decimalPlace*2)){
+            dfFormat+="0";
+            for(int i=1;i<decimalPlace;i++){
+                dfFormat+="#";
+            }
+        }
+        else{
+            for(int i=0;i<decimalPlace;i++){
+                dfFormat+="0";
+            }
+            
+        }
+        df = new DecimalFormat(dfFormat);
+        return df.format(rd);
     }
     
     public double getSliceXPos(int i) {
@@ -227,7 +245,7 @@ public class Calculator {
     
     public double getBaseLength(int i) {
         
-        return getYBoundary(i)[0]-getYBoundary(i)[1];
+        return Math.abs(getYBoundary(i)[0]-getYBoundary(i)[1]);
     }
     
     public double getBaseLengthActual(int i){
@@ -275,15 +293,15 @@ public class Calculator {
         x += riemannSumAdjustment;
         double y1 = Function1.calculate(new Argument("x="+x));
         double y2 = Function2.calculate(new Argument("x="+x));
-        yBound[0] = Math.max(y1, y2);
-        yBound[1] = Math.min(y1, y2);
+        yBound[0] = y1;
+        yBound[1] = y2;
         return yBound;
     }
     
     public double[] getYBoundaryActual(int i){
         double[] yActualBound = new double[2];
-        yActualBound[0] = getYBoundary(i)[0] * actualToAlgebraRatio;
-        yActualBound[1] = getYBoundary(i)[1] * actualToAlgebraRatio;
+        yActualBound[0] = Math.max(getYBoundary(i)[0],getYBoundary(i)[1]) * actualToAlgebraRatio;
+        yActualBound[1] = Math.min(getYBoundary(i)[0],getYBoundary(i)[1]) * actualToAlgebraRatio;
         return yActualBound;
     }
 
@@ -407,6 +425,7 @@ public class Calculator {
                 + "Volume(in cm³): "+ RoundToString(volume * Math.pow(actualToAlgebraRatio, 3),dcm)+"\n"
                 + "Riemann Sum volume: "+ RoundToString(rVolume,d)+"\n"
                 + "Riemann Sum volume(in cm³): "+ RoundToString(rVolume * Math.pow(actualToAlgebraRatio, 3),dcm)+"\n"
+                + "%Difference: "+RoundToString(Math.abs(volume-rVolume)/volume*100,3)+"%\n"
                 + "Riemann Sum type: ";
         switch(riemannSumType){
             case(Calculator.LEFT_RIEMANNSUM):
@@ -443,14 +462,15 @@ public class Calculator {
         d=3;
         for (int i=0;i<layersNum;i++){
             double[] yBoundary = getYBoundary(i);
-            double baseLength = yBoundary[0]-yBoundary[1];
-            
+            double baseLength = Math.abs(yBoundary[0]-yBoundary[1]);
+            double x = getSliceXPos(i);
             data += "\nLayer #"+(i+1)+ "\n";
-            data += "x-position: " + RoundToString(getSliceXPos(i),d)+"\n"
+            data += "x-position: " + RoundToString(x,d)+"\n"
                     + "x-position(in cm): " + RoundToString(getSliceActualXPos(i),dcm)+"\n"
-                    + "y boundaries: " + RoundToString(yBoundary[1],d)+" to "+RoundToString(yBoundary[0],d)+"\n"
-                    + "y boundaries(in cm): " + RoundToString(yBoundary[1]*actualToAlgebraRatio,dcm)
-                    +" to "+RoundToString(yBoundary[0]*actualToAlgebraRatio,dcm)+"\n"
+                    + Function1.getFunctionName()+"("+RoundToString(x,d)+") = " + RoundToString(yBoundary[0],d)+ "\n"
+                    + Function2.getFunctionName()+"("+RoundToString(x,d)+") = " + RoundToString(yBoundary[1],d)+ "\n"
+                    + "y boundaries(in cm): " + RoundToString(Math.min(yBoundary[0],yBoundary[1])*actualToAlgebraRatio,dcm)
+                    +" to "+RoundToString(Math.max(yBoundary[0],yBoundary[1])*actualToAlgebraRatio,dcm)+"\n"
                     + "Base length: " + RoundToString(baseLength,d)+"\n"
                     + "Base length(in cm): " + RoundToString(baseLength * actualToAlgebraRatio,dcm)+"\n";
             
