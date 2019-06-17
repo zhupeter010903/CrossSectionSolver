@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.text.DecimalFormat;
+import javax.swing.JButton;
 
 import org.joml.Intersectionf;
 import org.joml.Matrix3x2f;
@@ -72,6 +73,7 @@ public class Window2d implements Runnable{
     private double[][] functionPoints;
 
     private DecimalFormat frmt = new DecimalFormat("0.###");
+    private JButton btn;
     
     public Window2d(int width, int height, String title){
         this.width = width;
@@ -99,6 +101,11 @@ public class Window2d implements Runnable{
         }
     }
     
+    public Window2d(int width, int height, String title,Calculator cal,JButton btn){
+        this(width, height, title, cal);
+        this.btn = btn;
+    }
+    
     public void run() {
         try {
             init();
@@ -111,6 +118,7 @@ public class Window2d implements Runnable{
             mbCallback.free();
             sCallback.free();*/
         } finally {
+            btn.setEnabled(true);
             //stop();
             //errorCallback.free();
         }
@@ -469,24 +477,23 @@ public class Window2d implements Runnable{
     
     private void renderFunctionArea(){
         glBegin(GL11.GL_QUAD_STRIP);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_BLEND);
-        glColor4f(0.0f,191.f/255.f,1.0f,0.1f);
+        glColor3f(0.0f,191.f/255.f,1.0f);
         for(int i=0;i<=stepNum;i++){
-            glVertex2f((float)functionPoints[i][0], (float)functionPoints[i][1]);
-            glVertex2f((float)functionPoints[i][0], (float)functionPoints[i][2]);
+            glVertex2f((float)functionPoints[i][0],(float)functionPoints[i][1]);
+            glVertex2f((float)functionPoints[i][0],(float)functionPoints[i][2]);
         }
         glEnd();
-        glDisable(GL_BLEND);
         glLineWidth(1.0f);
     }
     
     private void renderFunction(){
+        //float upperLimit=(float)cal.getUpperLimit();
+        //float lowerLimit=(float)cal.getLowerLimit();
         glLineWidth(5.0f);
         glBegin(GL11.GL_LINE_STRIP);
         glColor3f(0.9f,0.0f,0.0f);
         for(int i=0;i<=stepNum;i++){
-            if(functionPoints[i][1]==Double.NaN){
+            if(Double.isNaN(functionPoints[i][1])){
                 glEnd();
                 glBegin(GL11.GL_LINE_STRIP);
             }
@@ -500,7 +507,7 @@ public class Window2d implements Runnable{
         glBegin(GL11.GL_LINE_STRIP);
         glColor3f(0.0f,0.0f,0.9f);
         for(int i=0;i<=stepNum;i++){
-            if(functionPoints[i][2]==Double.NaN){
+            if(Double.isNaN(functionPoints[i][2])){
                 glEnd();
                 glBegin(GL11.GL_LINE_STRIP);
             }
@@ -511,8 +518,6 @@ public class Window2d implements Runnable{
         }
         glEnd();
         glLineWidth(1.0f);
-        
-        
     }
 
     private void computeVisibleExtents() {
@@ -539,7 +544,6 @@ public class Window2d implements Runnable{
             renderGrid();
             renderTickLabels();
             renderFunction();
-            
             //renderMouseCursorCoordinates();
             glfwSwapBuffers(window);
         }

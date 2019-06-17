@@ -214,6 +214,11 @@ public class Calculator {
     }
     
     public static String RoundToString(double d, int decimalPlace){
+        double dd = d;
+        while(Math.abs(dd)<1&&dd!=0){
+            dd*=10;
+            decimalPlace++;
+        }
         String dfFormat = "0";
         double rd = Round(d,decimalPlace);
         if(decimalPlace>0){
@@ -221,18 +226,17 @@ public class Calculator {
         }
         if(Math.abs(rd-d)<Math.pow(10, -decimalPlace*2)){
             dfFormat+="0";
-            for(int i=1;i<decimalPlace;i++){
+            for(int i = 1; i<decimalPlace;i++){
                 dfFormat+="#";
             }
         }
         else{
-            for(int i=0;i<decimalPlace;i++){
+            for(int i = 0; i<decimalPlace;i++){
                 dfFormat+="0";
             }
-            
         }
         df = new DecimalFormat(dfFormat);
-        return df.format(rd);
+        return df.format(Round(d,decimalPlace));
     }
     
     public double getSliceXPos(int i) {
@@ -244,8 +248,8 @@ public class Calculator {
     }
     
     public double getBaseLength(int i) {
-        
-        return Math.abs(getYBoundary(i)[0]-getYBoundary(i)[1]);
+        double[] yBoundary = getYBoundary(i);
+        return Math.abs(yBoundary[0]-yBoundary[1]);
     }
     
     public double getBaseLengthActual(int i){
@@ -300,8 +304,9 @@ public class Calculator {
     
     public double[] getYBoundaryActual(int i){
         double[] yActualBound = new double[2];
-        yActualBound[0] = Math.max(getYBoundary(i)[0],getYBoundary(i)[1]) * actualToAlgebraRatio;
-        yActualBound[1] = Math.min(getYBoundary(i)[0],getYBoundary(i)[1]) * actualToAlgebraRatio;
+        double[] yBoundary = getYBoundary(i);
+        yActualBound[0] = Math.max(yBoundary[0], yBoundary[1]) * actualToAlgebraRatio;
+        yActualBound[1] = Math.min(yBoundary[0], yBoundary[1]) * actualToAlgebraRatio;
         return yActualBound;
     }
 
@@ -413,7 +418,7 @@ public class Calculator {
 
     public String getDataString(){
         int d = 6;
-        int dcm=2;
+        int dcm=3;
         String data = "";
         data += "Function 1: "+Function1.getFunctionName()+"("+Function1.getParameterName(0)+") = "
                 +Function1.getFunctionExpressionString()+"\n";
@@ -460,6 +465,7 @@ public class Calculator {
         }
         
         d=3;
+        dcm = 2;
         for (int i=0;i<layersNum;i++){
             double[] yBoundary = getYBoundary(i);
             double baseLength = Math.abs(yBoundary[0]-yBoundary[1]);
@@ -467,8 +473,8 @@ public class Calculator {
             data += "\nLayer #"+(i+1)+ "\n";
             data += "x-position: " + RoundToString(x,d)+"\n"
                     + "x-position(in cm): " + RoundToString(getSliceActualXPos(i),dcm)+"\n"
-                    + Function1.getFunctionName()+"("+RoundToString(x,d)+") = " + RoundToString(yBoundary[0],d)+ "\n"
-                    + Function2.getFunctionName()+"("+RoundToString(x,d)+") = " + RoundToString(yBoundary[1],d)+ "\n"
+                    + Function1.getFunctionName()+"("+RoundToString(x,d)+") = " + RoundToString(yBoundary[0],d)+"\n"
+                    + Function2.getFunctionName()+"("+RoundToString(x,d)+") = " + RoundToString(yBoundary[1],d)+"\n"
                     + "y boundaries(in cm): " + RoundToString(Math.min(yBoundary[0],yBoundary[1])*actualToAlgebraRatio,dcm)
                     +" to "+RoundToString(Math.max(yBoundary[0],yBoundary[1])*actualToAlgebraRatio,dcm)+"\n"
                     + "Base length: " + RoundToString(baseLength,d)+"\n"
@@ -487,8 +493,8 @@ public class Calculator {
                 case(Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE):
                     data += "Height: " + RoundToString(baseLength/2,d)+"\n";
                     data += "Height(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/2,dcm)+"\n";
-                    data += "Leg: " + RoundToString(baseLength/Math.sqrt(2),d)+"\n";
-                    data += "Leg(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/Math.sqrt(2),dcm)+"\n";
+                    data += "Leg length: " + RoundToString(baseLength/Math.sqrt(2),d)+"\n";
+                    data += "Leg length(in cm): " + RoundToString(baseLength*actualToAlgebraRatio/Math.sqrt(2),dcm)+"\n";
                     break;
                 default: break;
                                 

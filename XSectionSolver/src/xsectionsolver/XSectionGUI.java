@@ -1,6 +1,7 @@
 
 package xsectionsolver;
 
+import javax.swing.JOptionPane;
 import org.mariuszgromada.math.mxparser.*;
 import org.mariuszgromada.math.mxparser.mathcollection.*;
 import org.mariuszgromada.math.mxparser.parsertokens.*;
@@ -16,13 +17,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 public class XSectionGUI extends javax.swing.JFrame {
-    GLFWErrorCallback errorCallback;
-    GLFWKeyCallback keyCallback;
-    GLFWFramebufferSizeCallback fbCallback;
-    GLFWWindowSizeCallback wsCallback;
-    GLFWCursorPosCallback cpCallback;
-    GLFWMouseButtonCallback mbCallback;
-    GLFWScrollCallback sCallback;
     
     private String welcomeGuide;
     private Calculator c;
@@ -34,10 +28,75 @@ public class XSectionGUI extends javax.swing.JFrame {
         initiate();
     }
     
-    private void constructCalculator(){
+    private boolean constructCalculator(){
+        
+        if(txtF.getText().equals("")||txtG.getText().equals("")||txtLayersNum.getText().equals("")||
+                txtLowerLim.getText().equals("")||txtUpperLim.getText().equals("")||
+                txtActualLength.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Error: empty Input Exist!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        
+        int LayerNum;
+        double actualLength;
+        Argument lowerLimit = new Argument("x="+txtLowerLim.getText());
+        Argument upperLimit = new Argument("x="+txtUpperLim.getText());
+        try{
+            LayerNum = Integer.parseInt(txtLayersNum.getText());
+        }
+        catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(null, "Error: invalid input for number of layers!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        try{
+            actualLength = Double.parseDouble(txtActualLength.getText());
+        }
+        catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(null, "Error: invalid intput for actual length!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        if(Double.isNaN(lowerLimit.getArgumentValue())){
+            JOptionPane.showMessageDialog(null, "Error: invalid input for lower limit!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if(Double.isNaN(upperLimit.getArgumentValue())){
+            JOptionPane.showMessageDialog(null, "Error: invalid input for upper limit!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if(lowerLimit.getArgumentValue()>upperLimit.getArgumentValue()){
+            Object[] options = {"Yes", "No"};
+                //the option buttons for the confirm message will be "Yes", and "Cancel"
+                int switchComfirm = JOptionPane.showOptionDialog(null,
+                        "The lower limit is greater than the upper limit, do you want to switch the limits?", 
+                        "Switch Limits??",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if(switchComfirm == JOptionPane.YES_OPTION){
+                String limit = txtLowerLim.getText();
+                txtLowerLim.setText(txtUpperLim.getText());
+                txtUpperLim.setText(limit);
+            }
+            else{
+                return false;
+            }
+        }
+        
         c = new Calculator(functionInputAdjust(txtF.getText()), functionInputAdjust(txtG.getText()), cbBoxXSectionType.getSelectedIndex(),
-                           Integer.parseInt(txtLayersNum.getText()), txtLowerLim.getText(), txtUpperLim.getText(),
-                           Double.parseDouble(txtActualLength.getText()), cbBoxRSumType.getSelectedIndex());
+                           LayerNum, txtLowerLim.getText(), txtUpperLim.getText(),
+                           actualLength, cbBoxRSumType.getSelectedIndex());
+        
+        if(Double.isNaN(c.getFunction1().calculate(lowerLimit))){
+            JOptionPane.showMessageDialog(null, "Error: invalid input for function 1!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if(Double.isNaN(c.getFunction2().calculate(lowerLimit))){
+            JOptionPane.showMessageDialog(null, "Error: invalid input for function 2!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -55,8 +114,6 @@ public class XSectionGUI extends javax.swing.JFrame {
         lblLowerLim = new javax.swing.JLabel();
         lblActualLength = new javax.swing.JLabel();
         lblRSumType = new javax.swing.JLabel();
-        txtF = new javax.swing.JTextField();
-        txtG = new javax.swing.JTextField();
         txtLayersNum = new javax.swing.JTextField();
         txtUpperLim = new javax.swing.JTextField();
         txtLowerLim = new javax.swing.JTextField();
@@ -71,6 +128,10 @@ public class XSectionGUI extends javax.swing.JFrame {
         btnCalc = new javax.swing.JButton();
         btn3d = new javax.swing.JButton();
         btn2d = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtF = new javax.swing.JTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtG = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -141,33 +202,23 @@ public class XSectionGUI extends javax.swing.JFrame {
         lblRSumType.setMinimumSize(new java.awt.Dimension(200, 25));
         lblRSumType.setPreferredSize(new java.awt.Dimension(200, 25));
 
-        txtF.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtF.setMaximumSize(new java.awt.Dimension(150, 25));
-        txtF.setMinimumSize(new java.awt.Dimension(150, 25));
-        txtF.setPreferredSize(new java.awt.Dimension(150, 25));
-
-        txtG.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtG.setMaximumSize(new java.awt.Dimension(150, 25));
-        txtG.setMinimumSize(new java.awt.Dimension(150, 25));
-        txtG.setPreferredSize(new java.awt.Dimension(150, 25));
-
-        txtLayersNum.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtLayersNum.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         txtLayersNum.setText("" + Calculator.MIN_LAYERS_NUM);
         txtLayersNum.setMaximumSize(new java.awt.Dimension(150, 25));
         txtLayersNum.setMinimumSize(new java.awt.Dimension(150, 25));
         txtLayersNum.setPreferredSize(new java.awt.Dimension(150, 25));
 
-        txtUpperLim.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtUpperLim.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         txtUpperLim.setMaximumSize(new java.awt.Dimension(150, 25));
         txtUpperLim.setMinimumSize(new java.awt.Dimension(150, 25));
         txtUpperLim.setPreferredSize(new java.awt.Dimension(150, 25));
 
-        txtLowerLim.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtLowerLim.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         txtLowerLim.setMaximumSize(new java.awt.Dimension(150, 25));
         txtLowerLim.setMinimumSize(new java.awt.Dimension(150, 25));
         txtLowerLim.setPreferredSize(new java.awt.Dimension(150, 25));
 
-        txtActualLength.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtActualLength.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         txtActualLength.setText("" + Calculator.MIN_ACTUAL_LENGTH);
         txtActualLength.setMaximumSize(new java.awt.Dimension(150, 25));
         txtActualLength.setMinimumSize(new java.awt.Dimension(150, 25));
@@ -192,6 +243,7 @@ public class XSectionGUI extends javax.swing.JFrame {
         lblOutput.setMinimumSize(new java.awt.Dimension(100, 30));
         lblOutput.setPreferredSize(new java.awt.Dimension(100, 30));
 
+        txtOutput.setEditable(false);
         txtOutput.setColumns(20);
         txtOutput.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtOutput.setRows(5);
@@ -262,6 +314,16 @@ public class XSectionGUI extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        txtF.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        jScrollPane2.setViewportView(txtF);
+
+        jScrollPane3.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        txtG.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        jScrollPane3.setViewportView(txtG);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -274,42 +336,44 @@ public class XSectionGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblAuthors, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblInput, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(lblG, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(lblF, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(lblXSectionType, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblInput, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblXSectionType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbBoxXSectionType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblActualLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtActualLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblRSumType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbBoxRSumType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblUpperLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtUpperLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblLowerLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtLowerLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblLayersNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtLayersNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btn3d, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnCalc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn2d, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(lblF, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(txtF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(cbBoxXSectionType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(lblActualLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane2))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(lblG, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtActualLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(lblRSumType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(cbBoxRSumType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(lblLayersNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtLayersNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(lblUpperLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtUpperLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(lblLowerLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtLowerLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(btnCalc, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btn3d, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(btn2d, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1)
@@ -317,10 +381,10 @@ public class XSectionGUI extends javax.swing.JFrame {
                                 .addComponent(lblOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(31, Short.MAX_VALUE))
+                                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -333,47 +397,48 @@ public class XSectionGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblInput, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lblF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(lblInput, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblXSectionType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblLayersNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtLayersNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblUpperLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtUpperLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblLowerLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtLowerLim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblActualLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtActualLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(cbBoxXSectionType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane1))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(48, 48, 48)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                                    .addComponent(lblF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblRSumType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cbBoxRSumType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jScrollPane1))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                                    .addComponent(lblG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cbBoxXSectionType, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(lblXSectionType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtLayersNum, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(lblLayersNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtUpperLim, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(lblUpperLim, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtLowerLim, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(lblLowerLim, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(lblActualLength, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(txtActualLength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cbBoxRSumType, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                    .addComponent(lblRSumType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(18, 18, 18)
                         .addComponent(btnCalc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn2d, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn3d, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -396,47 +461,38 @@ public class XSectionGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        keyCallback.free();
-        fbCallback.free();
-        wsCallback.free();
-        cpCallback.free();
-        mbCallback.free();
-        sCallback.free();
-        errorCallback.free();
+        
         System.exit(0);
 
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnCalcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcActionPerformed
         
-        constructCalculator();
+        if(constructCalculator()){
         
-        txtOutput.setText(c.getDataString());
-        txtOutput.setCaretPosition(0);
-        
-        btn2d.setEnabled(true);
-        btn3d.setEnabled(true);
-        btnCalc.setEnabled(false);
-
+            txtOutput.setText(c.getDataString());
+            txtOutput.setCaretPosition(0);
+        }
     }//GEN-LAST:event_btnCalcActionPerformed
     
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
 
-        constructCalculator();
-        Window2d model2d = new Window2d(800, 600, "2D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
-        t2d = new Thread(model2d);
+        if(constructCalculator()){
+            Window2d model2d = new Window2d(800, 600, "2D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c,btn2d);
+            t2d = new Thread(model2d);
 
-        t2d.start();
-
+            t2d.start();
+        }
     }//GEN-LAST:event_btn2dActionPerformed
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
         
-        constructCalculator();
-        Window3d model3d = new Window3d(800, 600, "3D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c);
-        t3d = new Thread(model3d);
+        if(constructCalculator()){
+            Window3d model3d = new Window3d(800, 600, "3D Model - F: " + txtF.getText() + " G: " + txtG.getText(), c,btn3d);
+            t3d = new Thread(model3d);
 
-        t3d.start();
+            t3d.start();
+        }
 
     }//GEN-LAST:event_btn3dActionPerformed
 
@@ -468,9 +524,6 @@ public class XSectionGUI extends javax.swing.JFrame {
         cbBoxXSectionType.setSelectedIndex(2);
         cbBoxRSumType.setSelectedIndex(0);
         
-        btn2d.setEnabled(false);
-        btn3d.setEnabled(false);
-        btnCalc.setEnabled(true);
         
     }
     
@@ -533,6 +586,8 @@ public class XSectionGUI extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbBoxRSumType;
     private javax.swing.JComboBox<String> cbBoxXSectionType;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblActualLength;
     private javax.swing.JLabel lblAuthors;
     private javax.swing.JLabel lblF;

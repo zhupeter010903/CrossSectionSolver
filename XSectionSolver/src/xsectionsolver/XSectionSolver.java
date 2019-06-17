@@ -15,6 +15,9 @@ public class XSectionSolver {
 
     public static void main(String[] args) {
         
+        /*if (restartJVM()) {
+            return;
+        }*/
         System.setProperty("sun.awt.noerasebackground", "true");
         
         /*Expression eh = new Expression("ln(sin(pi/2))");
@@ -32,11 +35,11 @@ public class XSectionSolver {
         System.out.println(cal.calculateTheoraticalVolume());*/
         
         
-        /*Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
-                ,"arccsc(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4"
-                ,Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE,200,"-4","4",22.5,Calculator.LEFT_RIEMANNSUM);
-        */
-        //System.out.println(cal2.getDataString());
+        Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
+                ,"arccsc(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4"
+                ,Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE,20,"-4","-1",22.5,Calculator.LEFT_RIEMANNSUM);
+        
+        System.out.println(cal2.getDataString());
         /*for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
             System.out.println(i+": "+cal2.getPieceWiseLimits().get(i).getArgumentValue());
         }*/
@@ -58,13 +61,15 @@ public class XSectionSolver {
                 //,Calculator.XSECTION_SEMICIRCLE,53,"0","pi",24,0);
         //System.out.println(cal5.getDataString());
         
-        /*if (restartJVM()) {
-            return;
-        }
+        /*
         Window3d threeD= new Window3d(800,600,"3d model",cal3);
         threeD.run();*/
         //new XSectionGUI().run();
         //new XSectionGUI().setVisible(true);
+        /*Calculator cal=new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4",
+        "arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4",
+        0,40,"-4","4",20,0);
+        System.out.println(cal.getFunction1().calculate(0));*/
     }
     /**
      * Mark Chen: 

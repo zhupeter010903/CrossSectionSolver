@@ -6,6 +6,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import javax.swing.JButton;
 
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -49,6 +50,7 @@ public class Window3d implements Runnable{
     private boolean keys[]=new boolean[GLFW.GLFW_KEY_LAST];
     private Calculator cal;
     private float[][] graphData;
+    private JButton btn;
     
     ArcBallCamera cam = new ArcBallCamera();
     
@@ -72,6 +74,11 @@ public class Window3d implements Runnable{
             graphData[i][4] = (float)cal.getLayerThickness();
         }
     }
+    
+    public Window3d(int width, int height, String title, Calculator cal,JButton btn){
+        this(width,height,title,cal);
+        this.btn = btn;
+    }
 
     public void run() {
         try {
@@ -87,6 +94,7 @@ public class Window3d implements Runnable{
             sCallback.free();
             mbCallback.free();*/
         } finally {
+            btn.setEnabled(true);
             //stop();
             //errorCallback.free();
         }
