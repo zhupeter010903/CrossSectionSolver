@@ -103,6 +103,19 @@ public class PieceWiseFunction extends Function{
         }
         return Double.NaN;
     }
+    
+    @Override
+    public double calculate(double... parameters) {
+        double a = parameters[0];
+        for(int i=0;i<pieceWiseNumber;i++){
+            
+            if (a>=pieceWiseLimits[i][0].getArgumentValue()
+                    && a<=pieceWiseLimits[i][1].getArgumentValue()){
+                return this.getFunction(i).calculate(a);
+            }
+        }
+        return Double.NaN;
+    }
 
     public Argument[][] getPieceWiseLimits() {
         return pieceWiseLimits;
