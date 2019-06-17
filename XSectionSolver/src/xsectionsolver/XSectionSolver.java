@@ -35,11 +35,11 @@ public class XSectionSolver {
         System.out.println(cal.calculateTheoraticalVolume());*/
         
         
-        Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
+        /*Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
                 ,"arccsc(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4"
                 ,Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE,20,"-4","-1",22.5,Calculator.LEFT_RIEMANNSUM);
-        
-        System.out.println(cal2.getDataString());
+        */
+        //System.out.println(cal2.getDataString());
         /*for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
             System.out.println(i+": "+cal2.getPieceWiseLimits().get(i).getArgumentValue());
         }*/
@@ -64,7 +64,7 @@ public class XSectionSolver {
         /*
         Window3d threeD= new Window3d(800,600,"3d model",cal3);
         threeD.run();*/
-        //new XSectionGUI().run();
+        new XSectionGUI().run();
         //new XSectionGUI().setVisible(true);
         /*Calculator cal=new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4",
         "arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4",
