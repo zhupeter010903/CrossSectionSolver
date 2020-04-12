@@ -15,9 +15,9 @@ public class XSectionSolver {
 
     public static void main(String[] args) {
         
-        /*if (restartJVM()) {
+        if (restartJVM()) {
             return;
-        }*/
+        }
         System.setProperty("sun.awt.noerasebackground", "true");
         
         /*Expression eh = new Expression("ln(sin(pi/2))");
@@ -35,10 +35,10 @@ public class XSectionSolver {
         System.out.println(cal.calculateTheoraticalVolume());*/
         
         
-        /*Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
+        Calculator cal2 = new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4"
                 ,"arccsc(x)-pi/4,-4,-1,arcsin(x)-pi/4,-1,1,arccsc(x)-pi/4,1,4"
-                ,Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE,20,"-4","-1",22.5,Calculator.LEFT_RIEMANNSUM);
-        */
+                ,Calculator.XSECTION_RIGHTISOSCELES_TRIANGLE_HYPOTENUSE,50,"-4","4",20,Calculator.LEFT_RIEMANNSUM);
+        
         //System.out.println(cal2.getDataString());
         /*for(int i=0;i<cal2.getPieceWiseLimits().size();i++){
             System.out.println(i+": "+cal2.getPieceWiseLimits().get(i).getArgumentValue());
@@ -60,11 +60,12 @@ public class XSectionSolver {
         //Calculator cal5 = new Calculator("sqrt((x^2)*(pi-x))","sin(x)"
                 //,Calculator.XSECTION_SEMICIRCLE,53,"0","pi",24,0);
         //System.out.println(cal5.getDataString());
+         Window3d threeD= new Window3d(800,600,"3d model",cal2);
+        threeD.run();
         
-        /*
-        Window3d threeD= new Window3d(800,600,"3d model",cal3);
-        threeD.run();*/
-        new XSectionGUI().run();
+        //Window3d threeD= new Window3d(800,600,"3d model",cal2);
+        //threeD.run();
+        //new XSectionGUI().run();
         //new XSectionGUI().setVisible(true);
         /*Calculator cal=new Calculator("arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4",
         "arcsec(x)-pi/4,-4,-1,arccos(x)-pi/4,-1,1,arcsec(x)-pi/4,1,4",
